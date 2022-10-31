@@ -1,44 +1,10 @@
 <?php
-// function adventi_events_settings_init() {
-//     // add_submenu_page(
-
-//     // )
-
-//     // Register a new setting for "adventi_events" page
-//     register_setting('adventi_events', 'adventi_events_options');
-
-//     // new section
-//     add_settings_section(
-//         'adventi_events_section_general',
-//         __('Generelle Einstellungen', 'adventi-events'),
-//         'adventi_events_section_developers_callback',
-// 		'adventi_events'
-//     );
-
-//     // Register a new field in the "adventi_events_general" section, inside the "adventi_events" page.
-// 	add_settings_field(
-// 		'adventi_events_church_name', // As of WP 4.6 this value is used only internally.
-// 		                    // Use $args' label_for to populate the id inside the callback.
-//         __( 'Name der Kirche', 'adventi_events' ),
-// 		'adventi_events_church_name_cb',
-// 		'adventi_events',
-// 		'adventi_events_section_general',
-// 		array(
-// 			'label_for'         => 'adventi_events_church_name',
-// 			'class'             => 'adventi_events_row'
-// 		)
-// 	);
-// }
-// add_action('admin_init', 'adventi_events_settings_init');
 
 /**
  * @internal never define functions inside callbacks.
  * these functions could be run multiple times; this would result in a fatal error.
  */
 
-/**
- * custom option and settings
- */
 function adventi_events_settings_init() {
 	// Register a new setting for "wporg" page.
 	register_setting( 'adventi_events', 'adventi_events_options' );
@@ -48,6 +14,14 @@ function adventi_events_settings_init() {
 		'adventi_events_section_general',
 		__( 'Generelle Einstellungen', 'adventi-events' ),
         'adventi_events_section_general_callback',
+		'adventi_events'
+	);
+
+	// Register a new section in the "wporg" page.
+	add_settings_section(
+		'adventi_events_section_reload_data',
+		__( 'Daten aktualisieren', 'adventi-events' ),
+        'adventi_events_section_reload_data_callback',
 		'adventi_events'
 	);
 
@@ -62,7 +36,6 @@ function adventi_events_settings_init() {
 		array(
 			'label_for'         => 'adventi_events_field_church_name',
 			'class'             => 'adventi_events_row',
-			'adventi_events_church_name' => 'church_name',
 		)
 	);
 	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
@@ -76,7 +49,6 @@ function adventi_events_settings_init() {
 		array(
 			'label_for'         => 'adventi_events_field_preacher_plan',
 			'class'             => 'adventi_events_row',
-			'adventi_events_preacher_plan' => 'preacher_plan',
 		)
 	);
 }
@@ -99,6 +71,23 @@ add_action( 'admin_init', 'adventi_events_settings_init' );
  * @param array $args  The settings array, defining title, id, callback.
  */
 function adventi_events_section_general_callback( $args ) { }
+
+function adventi_events_section_reload_data_callback( $args ) {
+
+	$update_nonce = wp_create_nonce( 'update_events' );
+	
+	wp_localize_script(
+		'update-script',
+		'ajax_obj',
+		array(
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'nonce'    => $update_nonce,
+		)
+	);
+	?>
+		<a class="button" onclick="update()">Test</a>
+	<?php
+}
 
 /**
  * Pill field callback function.
@@ -155,9 +144,10 @@ function adventi_events_field_preacher_plan_cb( $args ) {
  * Add the top level menu page.
  */
 function adventi_events_options_page() {
-	add_menu_page(
-		'Adventi Events',
-		'Adventi Events',
+	add_submenu_page(
+		'edit.php?post_type=event',
+		__('Adventi Events', 'adventi-events'),
+		__('Einstellungen', 'adventi-events'),
 		'manage_options',
 		'adventi_events',
 		'adventi_events_options_page_html'

@@ -40,7 +40,7 @@ add_action('init', 'adventi_events_init');
 
 function adventi_events_activate_plugin() {
     adventi_events_init();
-    wporg_settings_init();
+    adventi_event_settings_init();
     // Clear the permalinks after the post type has been registered.
 	flush_rewrite_rules();
 }
