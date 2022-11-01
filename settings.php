@@ -85,7 +85,8 @@ function adventi_events_section_reload_data_callback( $args ) {
 		)
 	);
 	?>
-		<a class="button" onclick="update()">Test</a>
+		<a class="button" onclick="update(event)">Test</a>
+		<div id="adventi-events-dates"></div>
 	<?php
 }
 
@@ -130,10 +131,10 @@ function adventi_events_field_preacher_plan_cb( $args ) {
 	?>
 	<input
 			id="<?php echo esc_attr( $args['label_for'] ); ?>"
-			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : 'https://predigtplan.adventisten.de' ?>"
 			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 			placeholder="z.B. https://predigtplan.adventisten.de"
-			style="min-width:300px;">
+			style="min-width:300px;" disabled>
 	<p class="description">
 		<?php esc_html_e( 'Adresse des Predigtplans', 'advent-events' ); ?>
 	</p>
