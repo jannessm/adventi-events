@@ -1,8 +1,8 @@
 <?php
 function adventi_events_enqueue_leaflet_styles($hook) {
-    // if ( 'post.php' !== $hook ) {
-	// 	return;
-	// }
+    if ( 'post-new.php' !== $hook && 'post.php' !== $hook ) {
+		return;
+	}
 
     wp_enqueue_style(
         'leaflet-styles',

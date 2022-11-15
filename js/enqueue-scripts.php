@@ -15,7 +15,7 @@ function adventi_events_enqueue_admin_scripts( $hook ) {
 }
 
 function adventi_events_enqueue_leaflet_scripts($hook) {
-    if ( 'post.php' !== $hook ) {
+    if ( 'post-new.php' !== $hook && 'post.php' !== $hook ) {
 		return;
 	}
 

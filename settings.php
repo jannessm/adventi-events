@@ -19,6 +19,14 @@ function adventi_events_settings_init() {
 
 	// Register a new section in the "wporg" page.
 	add_settings_section(
+		'adventi_events_section_graphhopper',
+		__( 'Karten', 'adventi-events' ),
+        'adventi_events_section_graphhopper_callback',
+		'adventi_events'
+	);
+
+	// Register a new section in the "wporg" page.
+	add_settings_section(
 		'adventi_events_section_reload_data',
 		__( 'Daten aktualisieren', 'adventi-events' ),
         'adventi_events_section_reload_data_callback',
@@ -41,12 +49,52 @@ function adventi_events_settings_init() {
 	
 	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
 	add_settings_field(
+		'adventi_events_field_church_location', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Adresse', 'advent-events' ),
+		'adventi_events_field_church_location_cb',
+		'adventi_events',
+		'adventi_events_section_graphhopper',
+		array(
+			'label_for'         => 'adventi_events_field_church_location',
+			'class'             => 'adventi_events_row',
+		)
+	);
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
+		'adventi_events_field_church_long', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Longitude', 'advent-events' ),
+		'adventi_events_field_church_long_cb',
+		'adventi_events',
+		'adventi_events_section_graphhopper',
+		array(
+			'label_for'         => 'adventi_events_field_church_long',
+			'class'             => 'adventi_events_row',
+		)
+	);
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
+		'adventi_events_field_church_lat', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Latitude', 'advent-events' ),
+		'adventi_events_field_church_lat_cb',
+		'adventi_events',
+		'adventi_events_section_graphhopper',
+		array(
+			'label_for'         => 'adventi_events_field_church_lat',
+			'class'             => 'adventi_events_row',
+		)
+	);
+	
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
 		'adventi_events_field_graphhopper_api_key', // As of WP 4.6 this value is used only internally.
 		                        // Use $args' label_for to populate the id inside the callback.
 		__( 'Graphhopper API Key', 'advent-events' ),
 		'adventi_events_field_graphhopper_api_key_cb',
 		'adventi_events',
-		'adventi_events_section_general',
+		'adventi_events_section_graphhopper',
 		array(
 			'label_for'         => 'adventi_events_field_graphhopper_api_key',
 			'class'             => 'adventi_events_row',
@@ -86,6 +134,7 @@ add_action( 'admin_init', 'adventi_events_settings_init' );
  * @param array $args  The settings array, defining title, id, callback.
  */
 function adventi_events_section_general_callback( $args ) { }
+function adventi_events_section_graphhopper_callback( $args ) { }
 
 function adventi_events_section_reload_data_callback( $args ) {
 
@@ -127,6 +176,83 @@ function adventi_events_field_church_name_cb( $args ) {
 			style="min-width:300px;">
 	<p class="description">
 		<?php esc_html_e( 'Kirchenname, wie auf dem Predigtplan angegeben', 'advent-events' ); ?>
+	</p>
+	<?php
+}
+
+/**
+ * Pill field callback function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
+function adventi_events_field_church_location_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+	?>
+	<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			placeholder="z.B. Lucy-Lameck-Straße 27, 12049 Berlin"
+			style="min-width:300px;">
+	<p class="description">
+		<?php esc_html_e( 'Adresse der Kirche', 'advent-events' ); ?>
+	</p>
+	<?php
+}
+
+/**
+ * Pill field callback function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
+function adventi_events_field_church_long_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+	?>
+	<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			placeholder="z.B. 13.4206138"
+			style="min-width:300px;">
+	<p class="description">
+		<?php esc_html_e( 'Longitude der Adresse (wird für die Kartenansicht genutzt)', 'advent-events' ); ?>
+	</p>
+	<?php
+}
+/**
+ * Pill field callback function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
+function adventi_events_field_church_lat_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+	?>
+	<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			placeholder="z.B. 52.4827523"
+			style="min-width:300px;">
+	<p class="description">
+		<?php esc_html_e( 'Latitude der Adresse (wird für die Kartenansicht genutzt)', 'advent-events' ); ?>
 	</p>
 	<?php
 }

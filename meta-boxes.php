@@ -53,6 +53,14 @@ abstract class Adventi_Events_Meta_Box {
 		$is_special = get_post_meta( $post->ID, '_adventi_events_meta_is_special', true ) === "true";
 		$image = get_post_meta( $post->ID, '_adventi_events_meta_image', true );
 
+		$default_point = '';
+		if (isset($options['adventi_events_field_church_long']) && isset($options['adventi_events_field_church_lat'])) {
+			$default_point = '['.$options['adventi_events_field_church_long'].','.$options['adventi_events_field_church_lat'].']';
+		}
+
+		$location = $location !== '' ? $location : $options['adventi_events_field_church_location'];
+		$location_point = $location_point !== '' ? $location_point : $default_point;
+
 		wp_localize_script(
 			'leaflet-script',
 			'leaflet_options',
@@ -69,7 +77,7 @@ abstract class Adventi_Events_Meta_Box {
 		
 		?>
 		<label for="_adventi_events_meta_date" class="adventi_events_meta_box">Datum</label>
-		<input type="datetime-local" name="_adventi_events_meta_date" value="<?php echo $date; ?>" class="adventi_events_meta_box">
+		<input type="datetime-local" name="_adventi_events_meta_date" value="<?php echo !$date; ?>" class="adventi_events_meta_box">
 		<br>
 
 		<label for="_adventi_events_meta_location" class="adventi_events_meta_box">Ort</label>
