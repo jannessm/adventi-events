@@ -38,6 +38,21 @@ function adventi_events_settings_init() {
 			'class'             => 'adventi_events_row',
 		)
 	);
+	
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
+		'adventi_events_field_graphhopper_api_key', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Graphhopper API Key', 'advent-events' ),
+		'adventi_events_field_graphhopper_api_key_cb',
+		'adventi_events',
+		'adventi_events_section_general',
+		array(
+			'label_for'         => 'adventi_events_field_graphhopper_api_key',
+			'class'             => 'adventi_events_row',
+		)
+	);
+
 	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
 	add_settings_field(
 		'adventi_events_field_preacher_plan', // As of WP 4.6 this value is used only internally.
@@ -125,6 +140,31 @@ function adventi_events_field_church_name_cb( $args ) {
  *
  * @param array $args
  */
+function adventi_events_field_graphhopper_api_key_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+	?>
+	<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			placeholder="API Key für Kartendarstellung und Routenplaner"
+			style="min-width:300px;">
+	<p class="description">
+		<?php esc_html_e( 'Google hilft', 'advent-events' ); ?>
+	</p>
+	<?php
+}
+/**
+ * Pill field callback function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
 function adventi_events_field_preacher_plan_cb( $args ) {
 	// Get the value of the setting we've registered with register_setting()
 	$options = get_option( 'adventi_events_options' );
@@ -132,9 +172,14 @@ function adventi_events_field_preacher_plan_cb( $args ) {
 	<input
 			id="<?php echo esc_attr( $args['label_for'] ); ?>"
 			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : 'https://predigtplan.adventisten.de' ?>"
-			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 			placeholder="z.B. https://predigtplan.adventisten.de"
 			style="min-width:300px;" disabled>
+	<input
+			type="hidden"
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="https://predigtplan.adventisten.de"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			placeholder="z.B. https://predigtplan.adventisten.de">
 	<p class="description">
 		<?php esc_html_e( 'Adresse des Predigtplans', 'advent-events' ); ?>
 	</p>

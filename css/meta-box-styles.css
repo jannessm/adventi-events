@@ -1,0 +1,37 @@
+label.adventi_events_meta_box {
+  width: 200px;
+  display: inline-block;
+}
+
+input.adventi_events_meta_box {
+  width: calc(100% - 210px);
+  margin: 10px 0;
+  padding: 0 8px;
+  line-height: 2;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+}
+
+#location_prev.adventi_events_meta_box {
+  height: 300px;
+  margin-top: 50px;
+}
+
+
+#location_proposals.adventi_events_meta_box {
+  background: white;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  display: none;
+  width: calc(100% - 210px);
+  margin: 10px 0;
+  margin-left: 200px;
+}
+.adventi_events_location_proposal {
+  line-height: 2;
+  padding: 0 8px;
+  border-radius: 4px;
+}
+.adventi_events_location_proposal:hover {
+  background-color: lightgrey;
+}

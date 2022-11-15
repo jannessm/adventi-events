@@ -14,6 +14,12 @@ function update_events_handler() {
     }
 
     $resp = wp_remote_get($plan_url);
+
+    if (is_wp_error($resp)) {
+        wp_send_json($resp->get_error_message());
+        return;
+    }   
+
     $cookies = $resp['cookies'];
 
     $data = get_and_parse_csv($plan_url, $cookies, $church);
