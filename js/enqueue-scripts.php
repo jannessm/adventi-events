@@ -36,6 +36,24 @@ function adventi_events_enqueue_leaflet_scripts($hook) {
     );
 }
 
+function adventi_events_enqueue_leaflet_scripts_read_only() {
+    wp_enqueue_script(
+        'leaflet-script-read-only',
+        plugins_url( '/leaflet-read-only.js', __FILE__),
+        array( 'jquery', 'leaflet' ),
+        '1.0.0',
+        true
+    );
+
+    wp_enqueue_script(
+        'leaflet',
+        plugins_url( '/leaflet@1.9.2.js', __FILE__),
+        array(),
+        '1.9.2',
+        true
+    );
+}
+
 function adventi_events_enqueue_media_scripts($hook) {
     if ( 'post-new.php' !== $hook && 'post.php' !== $hook && 'event_page_adventi_events' !== $hook) {
 		return;

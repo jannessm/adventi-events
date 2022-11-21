@@ -87,7 +87,7 @@ abstract class Adventi_Events_Meta_Box {
 		self::get_image_selector( $post );
 		
 		?>
-		<label for="_adventi_events_meta_preacher" class="adventi_events_meta_box">Datum</label>
+		<label for="_adventi_events_meta_preacher" class="adventi_events_meta_box">Prediger</label>
 		<input name="_adventi_events_meta_preacher" value="<?php echo !!$preacher ? $preacher : ''; ?>" class="adventi_events_meta_box">
 		<br>
 

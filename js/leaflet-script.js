@@ -23,7 +23,6 @@ async function init_map() {
 }
 
 function init_location() {
-	console.log(leaflet_options);
 	// if location string without point available
 	if (!!leaflet_options.location && !leaflet_options.location_point) {
 		searchLocation(leaflet_options.location);
@@ -95,7 +94,6 @@ function clearProposals() {
 }
 
 function updateLocation(point) {
-	console.log(point);
 	//remove old marker
 	adventi_events_map_marker.forEach(m => {
 		adventi_events_map.removeLayer(m);
