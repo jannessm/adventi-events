@@ -2,7 +2,8 @@
 
 abstract class Adventi_Events_Meta_Box {
 
-	private const meta_keys = ['date', 'location', 'location_point', 'hash', 'is_special', 'image'];
+	private const meta_keys = ['preacher', 'date', 'recurrence', 'location', 'location_point', 'hash', 'is_special', 'image'];
+	private const recurrence_intervals = ['einmalig', 'jede Woche', 'alle 2 Wochen', 'alle 3 Wochen', 'alle 4 Wochen'];
 
 	/**
 	 * Set up and add the meta box.
@@ -47,14 +48,23 @@ abstract class Adventi_Events_Meta_Box {
 	public static function html( $post ) {
 		$options = get_option( 'adventi_events_options' );
 
+		$preacher = get_post_meta( $post->ID, '_adventi_events_meta_preacher', true );
 		$date = get_post_meta( $post->ID, '_adventi_events_meta_date', true );
+		$recurrence = get_post_meta( $post->ID, '_adventi_events_meta_recurrence', true );
 		$location = get_post_meta( $post->ID, '_adventi_events_meta_location', true );
-		$location_point = get_post_meta( $post->ID, '_adventi_events_meta_location_point', true );
+		$location_point = get_post_meta( $post->ID, '_adventi_events_meta_location_point', true ); 
 		$is_special = get_post_meta( $post->ID, '_adventi_events_meta_is_special', true ) === "true";
 
 		$default_point = '';
 		if (isset($options['adventi_events_field_church_long']) && isset($options['adventi_events_field_church_lat'])) {
 			$default_point = '['.$options['adventi_events_field_church_long'].','.$options['adventi_events_field_church_lat'].']';
+		}
+		$default_date = '';
+		if (isset($options['adventi_events_field_service_start'])) {
+			$default_date = new DateTime();
+			$time = explode(':', $options['adventi_events_field_service_start']);
+			$default_date = $default_date->setTimestamp(strtotime('next saturday'))->setTime($time[0], $time[1]);
+			$default_date = $default_date->format('Y-m-d\\TH:i:s');
 		}
 
 		$location = $location !== '' ? $location : $options['adventi_events_field_church_location'];
@@ -74,12 +84,27 @@ abstract class Adventi_Events_Meta_Box {
 			)
 		);
 
-		Adventi_Events_Meta_Box::get_image_selector( $post );
+		self::get_image_selector( $post );
 		
 		?>
+		<label for="_adventi_events_meta_preacher" class="adventi_events_meta_box">Prediger</label>
+		<input name="_adventi_events_meta_preacher" value="<?php echo !!$preacher ? $preacher : ''; ?>" class="adventi_events_meta_box">
+		<br>
 
 		<label for="_adventi_events_meta_date" class="adventi_events_meta_box">Datum</label>
-		<input type="datetime-local" name="_adventi_events_meta_date" value="<?php echo !$date; ?>" class="adventi_events_meta_box">
+		<input type="datetime-local" name="_adventi_events_meta_date" value="<?php echo !!$date ? $date : $default_date; ?>" class="adventi_events_meta_box">
+		<br>
+
+		<label for="_adventi_events_meta_recurrence" class="adventi_events_meta_box">Wiederkehrende Veranstaltung</label>
+		<select type="datetime-local" name="_adventi_events_meta_recurrence" value="<?php echo !!$recurrence ? $recurrence : 'einmalig'; ?>" class="adventi_events_meta_box">
+			<?php
+				foreach(self::recurrence_intervals as $value) {
+					?>
+						<option value="<?php echo $value;?>"><?php echo $value;?></option>
+					<?php
+				}
+				?>
+		</select>
 		<br>
 
 		<label for="_adventi_events_meta_location" class="adventi_events_meta_box">Ort</label>
