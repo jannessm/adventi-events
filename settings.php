@@ -28,7 +28,7 @@ function adventi_events_settings_init() {
 	// Register a new section in the "wporg" page.
 	add_settings_section(
 		'adventi_events_section_reload_data',
-		__( 'Daten aktualisieren', 'adventi-events' ),
+		__( 'Aktualisierung der Daten', 'adventi-events' ),
         'adventi_events_section_reload_data_callback',
 		'adventi_events'
 	);
@@ -43,6 +43,20 @@ function adventi_events_settings_init() {
 		'adventi_events_section_general',
 		array(
 			'label_for'         => 'adventi_events_field_church_name',
+			'class'             => 'adventi_events_row',
+		)
+	);
+
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
+		'adventi_events_field_service_start', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Kirche', 'advent-events' ),
+		'adventi_events_field_service_start_cb',
+		'adventi_events',
+		'adventi_events_section_general',
+		array(
+			'label_for'         => 'adventi_events_field_service_start',
 			'class'             => 'adventi_events_row',
 		)
 	);
@@ -190,6 +204,33 @@ function adventi_events_field_church_name_cb( $args ) {
  *
  * @param array $args
  */
+function adventi_events_field_service_start_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+	?>
+	<input
+			id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>"
+			name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			type="time"
+			placeholder="10:30"
+			style="min-width:300px;">
+	<p class="description">
+		<?php esc_html_e( 'Wann beginnt der Gottesdienst normalerweise', 'advent-events' ); ?>
+	</p>
+	<?php
+}
+
+/**
+ * Pill field callback function.
+ *
+ * WordPress has magic interaction with the following keys: label_for, class.
+ * - the "label_for" key value is used for the "for" attribute of the <label>.
+ * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
+ * Note: you can add custom key value pairs to be used inside your callbacks.
+ *
+ * @param array $args
+ */
 function adventi_events_field_church_location_cb( $args ) {
 	// Get the value of the setting we've registered with register_setting()
 	$options = get_option( 'adventi_events_options' );
@@ -277,7 +318,7 @@ function adventi_events_field_graphhopper_api_key_cb( $args ) {
 			placeholder="API Key für Kartendarstellung und Routenplaner"
 			style="min-width:300px;">
 	<p class="description">
-		<?php esc_html_e( 'Google hilft', 'advent-events' ); ?>
+		<a href="graphhopper.com"><?php esc_html_e( 'Für die Kartenansicht wird die Graphhopper API benötigt', 'advent-events' ); ?></a>
 	</p>
 	<?php
 }

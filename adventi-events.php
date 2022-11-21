@@ -16,6 +16,7 @@ add_action( 'admin_enqueue_scripts', 'adventi_events_enqueue_leaflet_styles' );
 include_once dirname(__FILE__) . '/js/enqueue-scripts.php'; // load js scripts
 add_action( 'admin_enqueue_scripts', 'adventi_events_enqueue_admin_scripts' );
 add_action( 'admin_enqueue_scripts', 'adventi_events_enqueue_leaflet_scripts' );
+add_action( 'admin_enqueue_scripts', 'adventi_events_enqueue_media_scripts' );
 
 
 include_once dirname(__FILE__) . '/ajax-handler.php';

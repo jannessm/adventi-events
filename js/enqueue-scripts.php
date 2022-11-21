@@ -35,3 +35,19 @@ function adventi_events_enqueue_leaflet_scripts($hook) {
         true
     );
 }
+
+function adventi_events_enqueue_media_scripts($hook) {
+    if ( 'post-new.php' !== $hook && 'post.php' !== $hook ) {
+		return;
+	}
+
+    wp_enqueue_media();
+
+    wp_enqueue_script(
+        'image-select',
+        plugins_url( '/image-select.js', __FILE__),
+        array('jquery'),
+        '1.0.0',
+        true
+    );
+}
