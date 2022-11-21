@@ -37,7 +37,7 @@ function adventi_events_enqueue_leaflet_scripts($hook) {
 }
 
 function adventi_events_enqueue_media_scripts($hook) {
-    if ( 'post-new.php' !== $hook && 'post.php' !== $hook ) {
+    if ( 'post-new.php' !== $hook && 'post.php' !== $hook && 'event_page_adventi_events' !== $hook) {
 		return;
 	}
 

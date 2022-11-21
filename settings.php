@@ -60,6 +60,20 @@ function adventi_events_settings_init() {
 			'class'             => 'adventi_events_row',
 		)
 	);
+
+	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
+	add_settings_field(
+		'adventi_events_field_default_image', // As of WP 4.6 this value is used only internally.
+		                        // Use $args' label_for to populate the id inside the callback.
+		__( 'Kirche', 'advent-events' ),
+		'adventi_events_field_default_image_cb',
+		'adventi_events',
+		'adventi_events_section_general',
+		array(
+			'label_for'         => 'adventi_events_field_default_image',
+			'class'             => 'adventi_events_row',
+		)
+	);
 	
 	// Register a new field in the "adventi_events_section_general" section, inside the "wporg" page.
 	add_settings_field(
@@ -168,16 +182,7 @@ function adventi_events_section_reload_data_callback( $args ) {
 	<?php
 }
 
-/**
- * Pill field callback function.
- *
- * WordPress has magic interaction with the following keys: label_for, class.
- * - the "label_for" key value is used for the "for" attribute of the <label>.
- * - the "class" key value is used for the "class" attribute of the <tr> containing the field.
- * Note: you can add custom key value pairs to be used inside your callbacks.
- *
- * @param array $args
- */
+
 function adventi_events_field_church_name_cb( $args ) {
 	// Get the value of the setting we've registered with register_setting()
 	$options = get_option( 'adventi_events_options' );
@@ -218,6 +223,63 @@ function adventi_events_field_service_start_cb( $args ) {
 	<p class="description">
 		<?php esc_html_e( 'Wann beginnt der Gottesdienst normalerweise', 'advent-events' ); ?>
 	</p>
+	<?php
+}
+
+function adventi_events_field_default_image_cb( $args ) {
+	// Get the value of the setting we've registered with register_setting()
+	$options = get_option( 'adventi_events_options' );
+
+	$image_id = isset($options['adventi_events_field_default_image']) ? $options['adventi_events_field_default_image'] : '';
+
+	wp_localize_script(
+		'image-select',
+		'args',
+		array(
+			'image_id' => $image_id,
+			'image_container' => "#img-preview-container"
+		)
+	);
+
+	// Get WordPress' media upload URL
+	$upload_link = esc_url( get_upload_iframe_src( 'image' ) );
+		
+	// Get the image src
+	$image_src = wp_get_attachment_image_src( $image_id );
+
+	// For convenience, see if the array is valid
+	$is_image = is_array( $image_src );
+	?>
+
+	<div style="display: inline-block">
+		<!-- Your image container, which can be manipulated with js -->
+		<div id="img-preview-container" style="max-width:300px !important">
+			<?php if ( $is_image ) : ?>
+				<img src="<?php echo $image_src[0] ?>" alt="" style="" />
+			<?php endif; ?>
+		</div>
+
+		<!-- Your add & remove image links -->
+		<p class="hide-if-no-js">
+			<a class="upload-custom-img <?php if ( $is_image  ) { echo 'hidden'; } ?>" 
+			href="<?php echo $upload_link ?>">
+				<?php _e('Set image') ?>
+			</a>
+			<a class="delete-custom-img <?php if ( ! $is_image  ) { echo 'hidden'; } ?>" 
+			href="#">
+				<?php _e('Remove this image') ?>
+			</a>
+		</p>
+
+		<!-- A hidden input to set and post the chosen image id -->
+		<input id="<?php echo esc_attr( $args['label_for'] ); ?>" class="image-id" name="adventi_events_options[<?php echo esc_attr( $args['label_for'] ); ?>]" type="hidden" value="<?php echo isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : '' ?>">
+		
+		<p class="description">
+			<?php esc_html_e( 'Standard Bild', 'advent-events' ); ?>
+		</p>
+	</div>
+	<br>
+	
 	<?php
 }
 
