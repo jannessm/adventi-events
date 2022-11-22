@@ -2,9 +2,9 @@
 
 add_shortcode('adventi_events_header', 'adventi_events_header');
 function adventi_events_header($atts = [], $content = '', $tag = '') {
-    $content .= adventi_events_date($atts) . '<br>';
-    $content .= adventi_events_preacher($atts) . '<br>';
-    $content .= adventi_events_location($atts) . '<br>';
+    $content .= adventi_events_date($atts);
+    $content .= adventi_events_preacher($atts);
+    $content .= adventi_events_location($atts);
     return $content;
 }
 
@@ -22,11 +22,7 @@ function adventi_events_preacher($atts = [], $content = '', $tag = '') {
 		), $atts, $tag
 	);
 
-    if ($atts['label']) {
-        return 'Prediger: ' . $preacher;
-    } else {
-        return $preacher;
-    }
+    return _adventi_events_label_value('Prediger', $preacher, $atts['label']);
 }
 
 add_shortcode('adventi_events_date', 'adventi_events_date');
@@ -46,11 +42,7 @@ function adventi_events_date($atts = [], $content = '', $tag = '') {
 
     $date = new DateTime($date);
 
-    if ($atts['label']) {
-        return 'Datum: ' . $date->format($atts['format']);
-    } else {
-        return $date->format($atts['format']);
-    }
+    return _adventi_events_label_value('Datum', $date->format($atts['format']), $atts['label']);
 }
 
 add_shortcode('adventi_events_location', 'adventi_events_location');
@@ -67,11 +59,7 @@ function adventi_events_location($atts = [], $content = '', $tag = '') {
 		), $atts, $tag
 	);
 
-    if ($atts['label']) {
-        return 'Ort: ' . $location;
-    } else {
-        return $location;
-    }
+    return _adventi_events_label_value('Ort', $location, $atts['label']);
 }
 
 add_shortcode('adventi_events_map', 'adventi_events_map');
@@ -110,4 +98,14 @@ function adventi_events_map($atts = [], $content = '', $tag = '') {
     $content .= '<div id="adventi_events_map" class="adventi_events_map" style="height:'.$atts['height'].'"></div>';
 
     return $content;
+}
+
+function _adventi_events_label_value($label, $value, $add_label) {
+    $o = '<p>';
+
+    if ($add_label) {
+        $o .= '<b style="width: 100px; display: inline-block">' . $label . ':</b> ';
+    }
+    
+    return $o . $value . '</p>';
 }
