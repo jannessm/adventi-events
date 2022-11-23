@@ -66,6 +66,7 @@ add_shortcode('adventi_events_map', 'adventi_events_map');
 function adventi_events_map($atts = [], $content = '', $tag = '') {
     $post = get_post();
     $options = get_option( 'adventi_events_options' );
+    $default_point = '['.$options['adventi_events_field_church_long'].','.$options['adventi_events_field_church_lat'].']';
 
     $location = get_post_meta( $post->ID, '_adventi_events_meta_location', true );
     $location_point = get_post_meta( $post->ID, '_adventi_events_meta_location_point', true ); 

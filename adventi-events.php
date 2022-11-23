@@ -26,7 +26,7 @@ add_action( 'wp_ajax_update_events', 'update_events_handler' );
 
 
 include_once dirname(__FILE__) . '/meta-boxes.php';
-add_action( 'add_meta_boxes', [ 'Adventi_Events_Meta_Box', 'add' ] );
-add_action( 'save_post', [ 'Adventi_Events_Meta_Box', 'save' ] );
+add_action( 'add_meta_boxes', [ 'AdventiEventsMetaBox', 'add' ] );
+add_action( 'save_post', [ 'AdventiEventsMetaBox', 'save' ] );
 
 include_once dirname(__FILE__) . '/shortcodes.php';
