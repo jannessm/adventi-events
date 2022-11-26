@@ -75,7 +75,7 @@ abstract class AdventiEventsMetaBox {
 			<?php
 				foreach(AdventiEventsIntervals::values() as $value) {
 					?>
-						<option value="<?php echo $value;?>"><?php echo $value;?></option>
+						<option value="<?php echo $value;?>" <?php echo $value === $event->recurrence ? 'selected' : '' ?>><?php echo $value;?></option>
 					<?php
 				}
 				?>
@@ -89,7 +89,7 @@ abstract class AdventiEventsMetaBox {
 		<br>
 
 		<label for="<?php echo AD_EV_META; ?>special" class="adventi_events_meta_box">Besondere Veranstaltung</label>
-		<input type="checkbox" name="<?php echo AD_EV_META; ?>special" <?php checked($event->is_special); ?> value="true">
+		<input type="checkbox" name="<?php echo AD_EV_META; ?>special" <?php checked($event->is_special()); ?> value="true">
 
 		<div id="location_prev" class="adventi_events_meta_box"></div>
 		<?php

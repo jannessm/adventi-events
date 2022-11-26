@@ -8,7 +8,7 @@ function update(e) {
 				if (typeof(data) === 'string') {
 					$('#adventi-events-dates').text(data)
 				} else {
-					$('#adventi-events-dates').html(Object.keys(data).reduce((d, date) => d + '<br>' + date + ': ' + data[date], ''));
+					$('#adventi-events-dates').html(Object.keys(data).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + date + '</span><span style="display: inline-block">' + data[date] + '</span><br>', ''));
 				}
 			});
 	});

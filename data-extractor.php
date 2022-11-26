@@ -57,9 +57,6 @@ class AdventiEventsDataExtractor {
     }
 
     private function parse_csv($lines) {
-        date_default_timezone_set('Europe/Berlin');
-        setlocale(LC_ALL, 'de_DE.utf8');
-
         $dates = array_slice($lines[2], 3);
         $preachers = [];
     
@@ -80,7 +77,12 @@ class AdventiEventsDataExtractor {
             $formatter = new IntlDateFormatter('de_DE', IntlDateFormatter::NONE, 
                                                IntlDateFormatter::NONE, NULL, NULL, "dd. MMM yy");
             $date = (new DateTime())->setTimestamp($formatter->parse($date));
-            array_push($plan, new AdventiEvent($date->format('Y-m-d'), $preachers[$i]));
+
+            $options = get_option( 'adventi_events_options' );
+			$time = explode(':', $options[AD_EV_FIELD . 'service_start']);
+            $date->setTime($time[0], $time[1]);
+
+            array_push($plan, new AdventiEvent(null, $date, $preachers[$i], null, null, null, null, null,$date->format('d-m-Y H:i') . ',' . $preachers[$i]));
         }
 
         return $plan;

@@ -1,6 +1,7 @@
 <?php
 
 include_once dirname(__FILE__) . '/data-extractor.php';
+include_once dirname(__FILE__) . '/page-manager.php';
 
 /**
  * Handles my AJAX request.
@@ -13,5 +14,17 @@ function update_events_handler() {
 
     $extractor = new AdventiEventsDataExtractor($plan_url, $church);
 
-    wp_send_json($extractor->get_data());
+    $events = $extractor->get_data();
+
+    $manager = new AdventiEventsPageManager($events);
+
+    $events = $manager->update();
+
+    $new_events = [];
+
+    foreach ($events as $e) {
+        $new_events[$e->original_input] = $e->preacher . '---'. $e->date->format('d.m.Y H:i');
+    }
+
+    wp_send_json($new_events);
 }
