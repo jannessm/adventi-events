@@ -78,7 +78,7 @@ class AdventiEventsDataExtractor {
                                                IntlDateFormatter::NONE, NULL, NULL, "dd. MMM yy");
             $date = (new DateTime())->setTimestamp($formatter->parse($date));
 
-            $options = get_option( 'adventi_events_options' );
+            $options = get_option( 'ad_ev_options' );
 			$time = explode(':', $options[AD_EV_FIELD . 'service_start']);
             $date->setTime($time[0], $time[1]);
 

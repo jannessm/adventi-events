@@ -72,6 +72,24 @@ class AdventiEventsPageManager {
     }
 
     private function get_default_content($event) {
+		$options = get_option( 'ad_ev_options' );
+        
+        switch ($event->special) {
+            case AdventiEventsSpecials::A:
+                return $options[AD_EV_FIELD . 'default_communion_text'];
+            case AdventiEventsSpecials::E:
+                return $options[AD_EV_FIELD . 'default_thanks_giving_text'];
+            case AdventiEventsSpecials::T:
+                return $options[AD_EV_FIELD . 'default_baptism_text'];
+            case AdventiEventsSpecials::J:
+                return $options[AD_EV_FIELD . 'default_youth_service_text'];
+            case AdventiEventsSpecials::G:
+                return $options[AD_EV_FIELD . 'default_community_hour_text'];
+            case AdventiEventsSpecials::W:
+                return $options[AD_EV_FIELD . 'default_forest_service_text'];
+            default:
+                return $options[AD_EV_FIELD . 'default_text'];
+        }
         return '';
     }
 }

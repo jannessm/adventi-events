@@ -9,8 +9,8 @@ include_once dirname(__FILE__) . '/page-manager.php';
 function update_events_handler() {
     check_ajax_referer( 'update_events' );
 	
-    $plan_url = get_option( 'adventi_events_options' )['adventi_events_field_preacher_plan'];
-    $church = get_option( 'adventi_events_options' )['adventi_events_field_church_name'];
+    $plan_url = get_option( 'ad_ev_options' )['ad_ev_field_preacher_plan'];
+    $church = get_option( 'ad_ev_options' )['ad_ev_field_church_name'];
 
     $extractor = new AdventiEventsDataExtractor($plan_url, $church);
 

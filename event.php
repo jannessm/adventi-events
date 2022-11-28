@@ -10,7 +10,8 @@ class AdventiEvent {
         'recurrence',
         'image_id',
         'location',
-        'location_point',
+        'location_lng',
+        'location_lat',
         'special'
     ];
 
@@ -31,11 +32,12 @@ class AdventiEvent {
         $recurrence = null,
         $image_id = null,
         $location = null,
-        $location_point = null,
+        $location_lng = null,
+        $location_lat = null,
         $special = null,
         $original_input = null,
     ) {
-		$this->options = get_option( 'adventi_events_options' );
+		$this->options = get_option( 'ad_ev_options' );
 
         $this->post_id = $post_id;
         $this->date = $this->set_value($date, self::default_date(), TRUE);
@@ -44,7 +46,8 @@ class AdventiEvent {
         $this->image_id = $this->set_value($image_id, $this->options[AD_EV_FIELD . 'default_image']);
         $this->location = new AdventiEventPosition(
             $this->set_value($location, $this->options[AD_EV_FIELD . 'church_location']),
-            $this->set_value($location_point, self::default_location_point())
+            $this->set_value($location_lng, $this->options[AD_EV_FIELD . 'church_lng']),
+            $this->set_value($location_lat, $this->options[AD_EV_FIELD . 'church_lat']),
         );
         $this->special = $this->set_value($special, '');
         
@@ -63,11 +66,12 @@ class AdventiEvent {
 		$recurrence = get_post_meta(     $post_id, AD_EV_META . 'recurrence', true );
 		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image', true );
 		$location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
-		$location_point = get_post_meta( $post_id, AD_EV_META . 'location_point', true ); 
+		$location_lng = get_post_meta(   $post_id, AD_EV_META . 'location_lng', true ); 
+		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true ); 
 		$special = get_post_meta(        $post_id, AD_EV_META . 'special', true ) === "true";
         $original_input = get_post_meta( $post_id, AD_EV_META . 'original_input', true);
-        
-        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $location, $location_point, $special, $original_input);
+
+        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $location, $location_lng, $location_lat, $special, $original_input);
     }
 
     public function is_recurrent() {
@@ -85,7 +89,8 @@ class AdventiEvent {
             AD_EV_META . 'recurrence' => $this->recurrence,
             AD_EV_META . 'image' => $this->image_id,
             AD_EV_META . 'location' => $this->location->address,
-            AD_EV_META . 'location_point' => $this->location->point_str(),
+            AD_EV_META . 'location_lng' => $this->location->lng,
+            AD_EV_META . 'location_lat' => $this->location->lat,
             AD_EV_META . 'special' => $this->special,
             AD_EV_META . 'original_input' => $this->original_input,
         ];
@@ -150,17 +155,6 @@ class AdventiEvent {
             return $default_date;
 		}
         return null;
-    }
-
-    private function default_location_point() {
-        $default_point = [0,0];
-		if (isset($this->options[AD_EV_FIELD . 'church_long']) &&
-            isset($this->options[AD_EV_FIELD . 'church_lat'])
-        ) {
-			$default_point = [$this->options[AD_EV_FIELD . 'church_long'],
-                              $this->options[AD_EV_FIELD . 'church_lat']];
-		}
-        return $default_point;
     }
 
     private function set_value($value, $default, $is_date=FALSE) {

@@ -1,16 +1,16 @@
 <?php
 
-add_shortcode('adventi_events_header', 'adventi_events_header');
-function adventi_events_header($atts = [], $content = '', $tag = '') {
-    $content .= adventi_events_date($atts);
-    $content .= adventi_events_preacher($atts);
-    $content .= adventi_events_location($atts);
+add_shortcode('ad_ev_header', 'ad_ev_header');
+function ad_ev_header($atts = [], $content = '', $tag = '') {
+    $content .= ad_ev_date($atts);
+    $content .= ad_ev_preacher($atts);
+    $content .= ad_ev_location($atts);
     return $content;
 }
 
-add_shortcode('adventi_events_preacher', 'adventi_events_preacher');
-function adventi_events_preacher($atts = [], $content = '', $tag = '') {
-    $preacher = get_post_meta( get_post()->ID, '_adventi_events_meta_preacher', true );
+add_shortcode('ad_ev_preacher', 'ad_ev_preacher');
+function ad_ev_preacher($atts = [], $content = '', $tag = '') {
+    $preacher = get_post_meta( get_post()->ID, AD_EV_META . 'preacher', true );
     
     // normalize attribute keys, lowercase
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -22,12 +22,12 @@ function adventi_events_preacher($atts = [], $content = '', $tag = '') {
 		), $atts, $tag
 	);
 
-    return _adventi_events_label_value('Prediger', $preacher, $atts['label']);
+    return _ad_ev_label_value('Prediger', $preacher, $atts['label']);
 }
 
-add_shortcode('adventi_events_date', 'adventi_events_date');
-function adventi_events_date($atts = [], $content = '', $tag = '') {
-    $date = get_post_meta( get_post()->ID, '_adventi_events_meta_date', true );
+add_shortcode('ad_ev_date', 'ad_ev_date');
+function ad_ev_date($atts = [], $content = '', $tag = '') {
+    $date = get_post_meta( get_post()->ID, AD_EV_META . 'date', true );
     
     // normalize attribute keys, lowercase
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -42,12 +42,12 @@ function adventi_events_date($atts = [], $content = '', $tag = '') {
 
     $date = new DateTime($date);
 
-    return _adventi_events_label_value('Datum', $date->format($atts['format']), $atts['label']);
+    return _ad_ev_label_value('Datum', $date->format($atts['format']), $atts['label']);
 }
 
-add_shortcode('adventi_events_location', 'adventi_events_location');
-function adventi_events_location($atts = [], $content = '', $tag = '') {
-    $location = get_post_meta( get_post()->ID, '_adventi_events_meta_location', true );
+add_shortcode('ad_ev_location', 'ad_ev_location');
+function ad_ev_location($atts = [], $content = '', $tag = '') {
+    $location = get_post_meta( get_post()->ID, AD_EV_META . 'location', true );
     
     // normalize attribute keys, lowercase
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -59,30 +59,32 @@ function adventi_events_location($atts = [], $content = '', $tag = '') {
 		), $atts, $tag
 	);
 
-    return _adventi_events_label_value('Ort', $location, $atts['label']);
+    return _ad_ev_label_value('Ort', $location, $atts['label']);
 }
 
-add_shortcode('adventi_events_map', 'adventi_events_map');
-function adventi_events_map($atts = [], $content = '', $tag = '') {
+add_shortcode('ad_ev_map', 'ad_ev_map');
+function ad_ev_map($atts = [], $content = '', $tag = '') {
     $post = get_post();
-    $options = get_option( 'adventi_events_options' );
-    $default_point = '['.$options['adventi_events_field_church_long'].','.$options['adventi_events_field_church_lat'].']';
+    $options = get_option( 'ad_ev_options' );
 
-    $location = get_post_meta( $post->ID, '_adventi_events_meta_location', true );
-    $location_point = get_post_meta( $post->ID, '_adventi_events_meta_location_point', true ); 
+    $location = get_post_meta( $post->ID, AD_EV_META . 'location', true );
+    $location_lng = get_post_meta( $post->ID, AD_EV_META . 'location_lng', true ); 
+    $location_lat = get_post_meta( $post->ID, AD_EV_META . 'location_lat', true ); 
 
-    $location = $location !== '' ? $location : $options['adventi_events_field_church_location'];
-    $location_point = $location_point !== '' ? $location_point : $default_point;
+    $location = $location !== '' ? $location : $options[AD_EV_FIELD . 'church_location'];
+    $location_lng = $location_lng !== '' ? $location_lng : $options[AD_EV_FIELD . 'church_lng'];
+    $location_lat = $location_lat !== '' ? $location_lat : $options[AD_EV_FIELD . 'church_lat'];
 
-    adventi_events_enqueue_leaflet_scripts_read_only();
+    ad_ev_enqueue_leaflet_scripts_read_only();
 
     wp_localize_script(
         'leaflet-script-read-only',
         'leaflet_options',
         array(
             'location' => $location,
-            'location_point' => $location_point,
-            'map_id' => 'adventi_events_map',
+            'location_lng' => $location_lng,
+            'location_lat' => $location_lat,
+            'map_id' => 'ad_ev_map',
         )
     );
 
@@ -96,12 +98,12 @@ function adventi_events_map($atts = [], $content = '', $tag = '') {
 		), $atts, $tag
 	);
 
-    $content .= '<div id="adventi_events_map" class="adventi_events_map" style="height:'.$atts['height'].'"></div>';
+    $content .= '<div id="ad_ev_map" class="ad_ev_map" style="height:'.$atts['height'].'"></div>';
 
     return $content;
 }
 
-function _adventi_events_label_value($label, $value, $add_label) {
+function _ad_ev_label_value($label, $value, $add_label) {
     $o = '<p>';
 
     if ($add_label) {

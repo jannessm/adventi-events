@@ -1,7 +1,7 @@
 <?php
 
-const AD_EV_META = '_adventi_events_meta_';
-const AD_EV_FIELD = 'adventi_events_field_';
+const AD_EV_META = '_ad_ev_meta_';
+const AD_EV_FIELD = 'ad_ev_field_';
 
 enum AdventiEventsIntervals: string {
     case ONCE = 'einmalig';
@@ -38,21 +38,10 @@ class AdventiEventPosition {
     public $lng = 0.0;
     public $lat = 0.0;
 
-    public function __construct($address, $lng_lat) {
+    public function __construct($address, $lng, $lat) {
         $this->address = $address;
-
-        if (is_array($lng_lat)) {
-            $this->lng = $lng_lat[0];
-            $this->lat = $lng_lat[1];
-        } else {
-            $lng_lat = explode(',', trim($lng_lat, "[]"));
-            $this->lng = floatval($lng_lat[0]);
-            $this->lat = floatval($lng_lat[1]);
-        }
-    }
-
-    public function point_str() {
-        return '['.$this->lng.','.$this->lat.']';
+        $this->lng = floatval($lng);
+        $this->lat = floatval($lat);
     }
 }
 

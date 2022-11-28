@@ -1,5 +1,7 @@
 jQuery(function($){
-
+  if (args.image_container == '') {
+    return;
+  }
   // Set all variables to be used in scope
   var frame,
       metaBox = $(args.image_container).parent(), // Your meta box id here

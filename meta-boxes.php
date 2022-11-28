@@ -9,7 +9,7 @@ abstract class AdventiEventsMetaBox {
 	 */
 	public static function add() {
 		add_meta_box(
-			'adventi_events_meta_box',  // Unique ID
+			'ad_ev_meta_box',  // Unique ID
 			'Adventi Event', 			// Box title
 			[ self::class, 'html' ],    // Content callback, must be of type callable
 			'event'                     // Post type
@@ -42,7 +42,7 @@ abstract class AdventiEventsMetaBox {
 	 * @param \WP_Post $post   Post object.
 	 */
 	public static function html( $post ) {
-		$options = get_option( 'adventi_events_options' );
+		$options = get_option( 'ad_ev_options' );
 		$event = AdventiEvent::from_post($post->ID);
 
 		wp_localize_script(
@@ -50,9 +50,11 @@ abstract class AdventiEventsMetaBox {
 			'leaflet_options',
 			array(
 				'location' => $event->location->address,
-				'location_point' => $event->location->point_str(),
+				'location_lng' => $event->location->lng,
+				'location_lat' => $event->location->lat,
 				'input_id' => 'location_input',
-				'input_point_id' => 'location_point',
+				'input_lng' => 'location_lng',
+				'input_lat' => 'location_lat',
 				'input_proposals_id' => 'location_proposals',
 				'map_id' => 'location_prev',
 				'graphhopper_api_key' => $options[AD_EV_FIELD . 'graphhopper_api_key']
@@ -60,18 +62,18 @@ abstract class AdventiEventsMetaBox {
 		);
 
 		self::get_image_selector( $post, $event->image_id );
-		
+
 		?>
-		<label for="<?php echo AD_EV_META; ?>preacher" class="adventi_events_meta_box">Prediger</label>
-		<input name="<?php echo AD_EV_META; ?>preacher" value="<?php echo $event->preacher; ?>" class="adventi_events_meta_box">
+		<label for="<?php echo AD_EV_META; ?>preacher" class="ad_ev_meta_box">Prediger</label>
+		<input name="<?php echo AD_EV_META; ?>preacher" value="<?php echo $event->preacher; ?>" class="ad_ev_meta_box">
 		<br>
 
-		<label for="<?php echo AD_EV_META; ?>date" class="adventi_events_meta_box">Datum</label>
-		<input type="datetime-local" name="<?php echo AD_EV_META; ?>date" value="<?php echo $event->date->format('Y-m-d\\TH:i'); ?>" class="adventi_events_meta_box">
+		<label for="<?php echo AD_EV_META; ?>date" class="ad_ev_meta_box">Datum</label>
+		<input type="datetime-local" name="<?php echo AD_EV_META; ?>date" value="<?php echo $event->date->format('Y-m-d\\TH:i'); ?>" class="ad_ev_meta_box">
 		<br>
 
-		<label for="<?php echo AD_EV_META; ?>recurrence" class="adventi_events_meta_box">Wiederkehrende Veranstaltung</label>
-		<select type="datetime-local" name="<?php echo AD_EV_META; ?>recurrence" value="<?php echo $event->recurrence; ?>" class="adventi_events_meta_box">
+		<label for="<?php echo AD_EV_META; ?>recurrence" class="ad_ev_meta_box">Wiederkehrende Veranstaltung</label>
+		<select type="datetime-local" name="<?php echo AD_EV_META; ?>recurrence" value="<?php echo $event->recurrence; ?>" class="ad_ev_meta_box">
 			<?php
 				foreach(AdventiEventsIntervals::values() as $value) {
 					?>
@@ -82,16 +84,17 @@ abstract class AdventiEventsMetaBox {
 		</select>
 		<br>
 
-		<label for="<?php echo AD_EV_META; ?>location" class="adventi_events_meta_box">Ort</label>
-		<input id="location_input" name="<?php echo AD_EV_META; ?>location" value="<?php echo $event->location->address; ?>" class="adventi_events_meta_box">
-		<input id="location_point" name="<?php echo AD_EV_META; ?>location_point" value="<?php echo $event->location->point_str(); ?>" type="hidden">
-		<div id="location_proposals" class="adventi_events_meta_box"></div>
+		<label for="<?php echo AD_EV_META; ?>location" class="ad_ev_meta_box">Ort</label>
+		<input id="location_input" name="<?php echo AD_EV_META; ?>location" value="<?php echo $event->location->address; ?>" class="ad_ev_meta_box">
+		<input id="location_lng" name="<?php echo AD_EV_META; ?>location_lng" value="<?php echo $event->location->lng; ?>" type="hidden">
+		<input id="location_lat" name="<?php echo AD_EV_META; ?>location_lat" value="<?php echo $event->location->lat; ?>" type="hidden">
+		<div id="location_proposals" class="ad_ev_meta_box"></div>
 		<br>
 
-		<label for="<?php echo AD_EV_META; ?>special" class="adventi_events_meta_box">Besondere Veranstaltung</label>
+		<label for="<?php echo AD_EV_META; ?>special" class="ad_ev_meta_box">Besondere Veranstaltung</label>
 		<input type="checkbox" name="<?php echo AD_EV_META; ?>special" <?php checked($event->is_special()); ?> value="true">
 
-		<div id="location_prev" class="adventi_events_meta_box"></div>
+		<div id="location_prev" class="ad_ev_meta_box"></div>
 		<?php
 	}
 
@@ -117,8 +120,8 @@ abstract class AdventiEventsMetaBox {
 		$is_image = is_array( $image_src );
 		?>
 
-		<label for="<?php echo AD_EV_META; ?>image" class="adventi_events_meta_box">Titelbild</label>
-		<div class="adventi_events_meta_box" style="display: inline-block">
+		<label for="<?php echo AD_EV_META; ?>image" class="ad_ev_meta_box">Titelbild</label>
+		<div class="ad_ev_meta_box" style="display: inline-block">
 			<!-- Your image container, which can be manipulated with js -->
 			<div id="img-preview-container" style="max-width:300px !important">
 				<?php if ( $is_image ) : ?>

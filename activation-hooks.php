@@ -1,6 +1,6 @@
 <?php
 
-function adventi_events_init() {
+function ad_ev_init() {
     $labels = array(
         'name'               => _x( 'Veranstaltungen', 'post type general name', 'adventi-events' ),
         'singular_name'      => _x( 'Veranstaltung', 'post type singular name', 'adventi-events' ),
@@ -36,16 +36,16 @@ function adventi_events_init() {
         'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'id' )
     ));
 }
-add_action('init', 'adventi_events_init');
+add_action('init', 'ad_ev_init');
 
-function adventi_events_activate_plugin() {
-    adventi_events_init();
-    adventi_events_settings_init();
+function ad_ev_activate_plugin() {
+    ad_ev_init();
+    ad_ev_settings_init();
     // Clear the permalinks after the post type has been registered.
 	flush_rewrite_rules();
 }
 
-function adventi_events_deactivate_plugin() {
+function ad_ev_deactivate_plugin() {
     unregister_post_type('event');
     // Clear the permalinks after the post type has been registered.
 	flush_rewrite_rules();
