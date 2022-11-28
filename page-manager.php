@@ -45,15 +45,17 @@ class AdventiEventsPageManager {
     public function update() {
         $this->delete_past_events();
         $existing_inputs = array_column($this->existing_events, 'original_input');
+        $added = [];
 
         foreach ($this->events as $e) {
             //check if event exists and add if missing
             if (!!$e->original_input && !in_array($e->original_input, $existing_inputs)) {
                 $this->add_event($e);
+                array_push($added, $e);
             }
         }
 
-        return $this->events;
+        return $added;
     }
 
     private function add_event($event) {

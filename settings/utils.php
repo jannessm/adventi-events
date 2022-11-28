@@ -78,8 +78,8 @@ function ad_ev_image_selector($image_id, $label, $field_name, $descr, $hidden=FA
         'image-select',
         'args',
         array(
-            'image_id' => '',
-            'image_container' => ''
+            'image_id' => $image_id,
+            'image_container' => '#img-preview-container'
         )
     );
 

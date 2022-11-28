@@ -82,7 +82,7 @@ class AdventiEventsDataExtractor {
 			$time = explode(':', $options[AD_EV_FIELD . 'service_start']);
             $date->setTime($time[0], $time[1]);
 
-            array_push($plan, new AdventiEvent(null, $date, $preachers[$i], null, null, null, null, null,$date->format('d-m-Y H:i') . ',' . $preachers[$i]));
+            array_push($plan, new AdventiEvent(null, $date, $preachers[$i], null, null, null, null, null, null,$date->format('d-m-Y H:i') . ',' . $preachers[$i]));
         }
 
         return $plan;

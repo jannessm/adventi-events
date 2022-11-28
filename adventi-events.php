@@ -32,3 +32,4 @@ add_action( 'add_meta_boxes', [ 'AdventiEventsMetaBox', 'add' ] );
 add_action( 'save_post', [ 'AdventiEventsMetaBox', 'save' ] );
 
 include_once dirname(__FILE__) . '/shortcodes.php';
+include_once dirname(__FILE__) . '/list-addons.php';
