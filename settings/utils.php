@@ -11,6 +11,16 @@ function ad_ev_settings_input($type, $field_name, $label, $placeholder, $descr) 
 
     $options[AD_EV_FIELD . 'preacher_plan'] = 'https://predigtplan.adventisten.de';
 
+    $value = isset( $options[ $field_name ] ) ? $options[ $field_name ] : '';
+    $input_style = 'min-width:300px;';
+    
+    if ($type == 'checkbox') {
+        $input_style = '';
+        $value = $value != '' ? 'checked' : '';
+    } else {
+        $value = 'value="' . $value . '"';
+    }
+
     if (strcmp($type, 'hidden') != 0) {
         ?>
             <label for="<?php echo esc_attr( $field_name ); ?>" style="<?php echo $ad_ev_label_style; ?>"><?php echo $label; ?></label>
@@ -20,11 +30,11 @@ function ad_ev_settings_input($type, $field_name, $label, $placeholder, $descr) 
     ?>
         <input
                 id="<?php echo esc_attr( $field_name ); ?>"
-                value="<?php echo isset( $options[ $field_name ] ) ? $options[ $field_name ] : '' ?>"
+                <?php echo $value; ?>
                 name="ad_ev_options[<?php echo esc_attr( $field_name ); ?>]"
                 placeholder="<?php echo $placeholder; ?>"
                 type="<?php echo $type; ?>"
-                style="min-width:300px;">
+                style="<?php echo $input_style; ?>">
     <?php
     if (strcmp($type, 'hidden') != 0) {
     ?>

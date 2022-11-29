@@ -6,11 +6,25 @@ include_once dirname(__FILE__) . '/page-manager.php';
 /**
  * Handles my AJAX request.
  */
-function update_events_handler() {
+function ad_ev_update_events_handler() {
     check_ajax_referer( 'update_events' );
 	
-    $plan_url = get_option( 'ad_ev_options' )['ad_ev_field_preacher_plan'];
-    $church = get_option( 'ad_ev_options' )['ad_ev_field_church_name'];
+    $events = ad_ev_update();
+
+    $new_events = [];
+
+    foreach ($events as $e) {
+        $new_events[$e->original_input] = $e->preacher . ' <-> '. $e->date->format('d.m.Y H:i');
+    }
+
+    wp_send_json($new_events);
+}
+
+function ad_ev_update() {
+    $options = get_option( 'ad_ev_options' );
+    $plan_url = $options[AD_EV_FIELD . 'preacher_plan'];
+    $church = $options[AD_EV_FIELD . 'church_name'];
+    $mail = $options[AD_EV_FIELD . 'cron_mail'];
 
     $extractor = new AdventiEventsDataExtractor($plan_url, $church);
 
@@ -20,11 +34,18 @@ function update_events_handler() {
 
     $events = $manager->update();
 
-    $new_events = [];
+    if ($mail != '') {
+        $message = 'Update Bericht:\n\n';
 
-    foreach ($events as $e) {
-        $new_events[$e->original_input] = $e->preacher . '---'. $e->date->format('d.m.Y H:i');
+        foreach ($events as $e) {
+            $message .= 'Prediger: ' . $e->preacher . '\n';
+            $message .= 'Ort: ' . $e->location . '\n';
+            $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '\n';
+            $message .= 'Special: ' . $e->special . '\n\n';
+        }
+
+        wp_mail($mail, 'Events Update', $message);
     }
 
-    wp_send_json($new_events);
+    return $events;
 }

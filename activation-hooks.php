@@ -46,6 +46,10 @@ function ad_ev_activate_plugin() {
 }
 
 function ad_ev_deactivate_plugin() {
+    
+    $timestamp = wp_next_scheduled( 'ad_ev_cron_hook' );
+    wp_unschedule_event( $timestamp, 'ad_ev_cron_hook' );
+
     unregister_post_type('event');
     // Clear the permalinks after the post type has been registered.
 	flush_rewrite_rules();

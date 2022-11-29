@@ -15,8 +15,10 @@ add_action( 'ad_ev_settings_content', 'ad_ev_section_update_page' );
 function ad_ev_section_update_page() {
 	global $ad_ev_active_tab;
     $options = get_option( 'ad_ev_options' );
-	
+
     if ( 'update' != $ad_ev_active_tab ) {
+		ad_ev_settings_input('hidden', AD_EV_FIELD . 'cron', '', '', '');
+		ad_ev_settings_input('hidden', AD_EV_FIELD . 'cron_mail', '', '', '');
 		return;
     }
 
@@ -35,6 +37,9 @@ function ad_ev_section_update_page() {
 			'nonce'    => $update_nonce,
 		)
 	);
+
+	ad_ev_settings_input('checkbox', AD_EV_FIELD . 'cron', 'Automatisches Update', '', 'wöchentliches Update');
+	ad_ev_settings_input('email', AD_EV_FIELD . 'cron_mail', 'Email', '', 'Update Bericht wird an diese Mail gesendet.');
 	?>
 		<a class="button" onclick="update(event)">Manuelles Update</a>
 		<div id="adventi-events-dates"></div>

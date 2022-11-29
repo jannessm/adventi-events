@@ -24,7 +24,7 @@ add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_media_scripts' );
 
 
 include_once dirname(__FILE__) . '/ajax-handler.php';
-add_action( 'wp_ajax_update_events', 'update_events_handler' );
+add_action( 'wp_ajax_update_events', 'ad_ev_update_events_handler' );
 
 
 include_once dirname(__FILE__) . '/meta-boxes.php';
@@ -33,3 +33,4 @@ add_action( 'save_post', [ 'AdventiEventsMetaBox', 'save' ] );
 
 include_once dirname(__FILE__) . '/shortcodes.php';
 include_once dirname(__FILE__) . '/list-addons.php';
+include_once dirname(__FILE__) . '/cron.php';
