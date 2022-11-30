@@ -4,6 +4,7 @@ include_once dirname(__FILE__) . '/general.php';
 include_once dirname(__FILE__) . '/map.php';
 include_once dirname(__FILE__) . '/update.php';
 include_once dirname(__FILE__) . '/texts.php';
+include_once dirname(__FILE__) . '/shortcodes.php';
 
 function ad_ev_settings_init() {
 	register_setting( 'adventi_events', 'ad_ev_options' );

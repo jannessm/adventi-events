@@ -18,11 +18,11 @@ function ad_ev_preacher($atts = [], $content = '', $tag = '') {
 	// override default attributes with user attributes
 	$atts = shortcode_atts(
 		array(
-			'label' => TRUE,
+			'label' => 'TRUE',
 		), $atts, $tag
 	);
 
-    return _ad_ev_label_value('Prediger', $preacher, $atts['label']);
+    return _ad_ev_label_value('Prediger', $preacher, strtoupper($atts['label']) == 'TRUE');
 }
 
 add_shortcode('ad_ev_date', 'ad_ev_date');
@@ -35,14 +35,14 @@ function ad_ev_date($atts = [], $content = '', $tag = '') {
 	// override default attributes with user attributes
 	$atts = shortcode_atts(
 		array(
-			'label' => TRUE,
+			'label' => 'TRUE',
             'format' => 'd.m.Y, H:i'
 		), $atts, $tag
 	);
 
     $date = new DateTime($date);
 
-    return _ad_ev_label_value('Datum', $date->format($atts['format']), $atts['label']);
+    return _ad_ev_label_value('Datum', $date->format($atts['format']), strtoupper($atts['label']) == 'TRUE');
 }
 
 add_shortcode('ad_ev_location', 'ad_ev_location');
@@ -55,11 +55,11 @@ function ad_ev_location($atts = [], $content = '', $tag = '') {
 	// override default attributes with user attributes
 	$atts = shortcode_atts(
 		array(
-			'label' => TRUE,
+			'label' => 'TRUE',
 		), $atts, $tag
 	);
 
-    return _ad_ev_label_value('Ort', $location, $atts['label']);
+    return _ad_ev_label_value('Ort', $location, strtoupper($atts['label']) == 'TRUE');
 }
 
 add_shortcode('ad_ev_map', 'ad_ev_map');
