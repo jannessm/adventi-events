@@ -127,18 +127,21 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
         $args = array(
             'post_type' => 'event',
             'posts_per_page' => $atts['n'] + 1,
-            'orderby' => 'meta_value_datetime',
+            'orderby' => 'meta_value',
+            'meta_key' => AD_EV_META . 'date',
             'meta_query' => [
-                'key' => AD_EV_META . 'date',
-                'value' => (new DateTime())->setTime(0,0),
-                'compare' => '>',
-                'type' => 'DATETIME'
+                [
+                    'key' => AD_EV_META . 'date',
+                    'value' => (new DateTime('now'))->format('Y-m-d'),
+                    'compare' => '>',
+                    'type' => 'DATE',
+                ]
             ],
             'order' => 'ASC'
         );
 
         $query = new WP_Query($args);
-        
+
         $post_counter = 0;
         
         if ($query->have_posts()) :
@@ -164,6 +167,11 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
             <a href="<?php echo $event_page ?>" style="margin: 10px"> Mehr ></a>
         </div>
     <?php
+}
+
+add_shortcode('ad_ev_previews', 'ad_ev_previews');
+function ad_ev_previews($atts = [], $content = '', $tag = '') {
+
 }
 
 function _ad_ev_label_value($label, $value, $add_label) {
