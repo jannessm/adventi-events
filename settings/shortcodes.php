@@ -55,6 +55,19 @@ function ad_ev_section_doc_page() {
 	</div>
 	<p>Mit label=FALSE kann die Beschreibung auch weggelassen werden.</p><br><br>
 
+	<h3>[ad_ev_previews type=all cols=3 n=6]</h3>
+	<p>Zeige eine Übersicht von Events. Diese sind chronologisch sortiert und können nach Typen gefiltert werden:</p>
+	<li>
+		<ul>all: Alle Events</ul>
+		<ul>special: Besonderen Veranstaltungen</ul>
+		<ul>recurrent: sich wiederholende Veranstaltungen</ul>
+		<ul>normal: keine besonderen und keine sich wiederholende Veranstaltungen</ul>
+		<ul>non-recurrent: keine sich wiederholende Veranstaltungen</ul>
+		<ul>non-special: keine besonderen Veranstaltungen</ul>
+		<ul>non-normal: keine normalen Veranstaltungen</ul>
+	</li>
+	<p>Mit 'n' kann die Anzahl an Veranstaltungen gesteuert werden.</p>
+	<p>Mit 'cols' kann die Anzahl an Veranstaltungen in einer Reihe gesteuert werden.</p><br><br>
 	
 	<?php
 }

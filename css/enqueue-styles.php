@@ -36,3 +36,12 @@ function ad_ev_enqueue_sidebar_styles() {
         '1.0.0'
     );
 }
+
+function ad_ev_enqueue_preview_styles() {
+    wp_enqueue_style(
+        'preview-styles',
+        plugins_url('/preview.css', __FILE__),
+        array(),
+        '1.0.0'
+    );
+}

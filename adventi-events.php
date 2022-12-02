@@ -14,6 +14,7 @@ include_once dirname(__FILE__) . '/css/enqueue-styles.php'; // load js scripts
 add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_leaflet_styles' );
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_leaflet_styles_read_only' );
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_sidebar_styles' );
+add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_preview_styles' );
 
 include_once dirname(__FILE__) . '/js/enqueue-scripts.php'; // load js scripts
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_leaflet_lib' );

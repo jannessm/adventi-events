@@ -30,6 +30,10 @@ enum AdventiEventsSpecials: string {
             ? $reflection->getCase($name)->getValue()
             : null;
     }
+
+    public static function values(): array {
+        return array_column(self::cases(), 'value');
+    }
 }
 
 
