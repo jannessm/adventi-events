@@ -1,0 +1,33 @@
+#ad_ev_sidebar{
+  display: inline-block;
+  width: 90%;
+  margin: 4%;
+  box-sizing: border-box;
+}
+.ad_ev_sidebar_top{
+  text-align: center;
+              letter-spacing: 3.5px;
+}
+.ad_ev_sidebar_top:hover{
+  background: #fff !important;
+  color: #000 !important;
+  cursor: pointer;
+}
+.ad_ev_sidebar_event{
+  box-sizing: border-box;
+  width: 100%; 
+  margin: 10px;
+  padding: 10px;
+  border: 2px solid #000;
+}
+.ad_ev_sidebar_event:hover{
+  opacity: 0.6;
+}
+.ad_ev_sidebar_event h1,
+.ad_ev_sidebar_event h2,
+.ad_ev_sidebar_event h3,
+.ad_ev_sidebar_event h4,
+.ad_ev_sidebar_event h5,
+.ad_ev_sidebar_event h6{
+  margin: 0;
+}

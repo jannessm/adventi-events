@@ -103,6 +103,69 @@ function ad_ev_map($atts = [], $content = '', $tag = '') {
     return $content;
 }
 
+add_shortcode('ad_ev_sidebar', 'ad_ev_sidebar');
+function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
+    // normalize attribute keys, lowercase
+    $atts = array_change_key_case( (array) $atts, CASE_LOWER );
+
+    // override default attributes with user attributes
+    $atts = shortcode_atts(
+        array(
+            'event_page' => '?page_id=9',
+            'n' => 5,
+        ), $atts, $tag
+    );
+
+    $event_page = $atts['event_page'];
+
+    ?>
+    <div id="ad_ev_sidebar">
+
+        <div class="ad_ev_sidebar_event ad_ev_sidebar_top"><a href="<?php echo $event_page; ?>">VERANSTALTUNGEN</a></div>
+
+    <?php
+        $args = array(
+            'post_type' => 'event',
+            'posts_per_page' => $atts['n'] + 1,
+            'orderby' => 'meta_value_datetime',
+            'meta_query' => [
+                'key' => AD_EV_META . 'date',
+                'value' => (new DateTime())->setTime(0,0),
+                'compare' => '>',
+                'type' => 'DATETIME'
+            ],
+            'order' => 'ASC'
+        );
+
+        $query = new WP_Query($args);
+        
+        $post_counter = 0;
+        
+        if ($query->have_posts()) :
+            while ($query->have_posts() && $post_counter < 5) :
+                $query->the_post();
+                $event = AdventiEvent::from_post(get_the_ID());
+        ?>
+                    
+                <a href="<?php the_permalink();?>">
+                    <div class="ad_ev_sidebar_event">
+                        <h4><?php echo strtoupper(the_title('','',false)); ?></h4>
+                        <hr>
+                        <?php echo $event->date->format('d.m.Y, H:i');?><br>
+                        <?php echo $event->location->address; ?>
+                    </div>
+                </a>
+
+        <?php
+                $post_counter++;
+            endwhile;
+        endif;
+        ?>
+            <a href="<?php echo $event_page ?>" style="margin: 10px"> Mehr ></a>
+        </div>
+    <?php
+}
+
 function _ad_ev_label_value($label, $value, $add_label) {
     $o = '<p>';
 

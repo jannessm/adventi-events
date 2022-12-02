@@ -27,3 +27,12 @@ function ad_ev_enqueue_leaflet_styles_read_only($hook) {
         '1.9.2'
     );
 }
+
+function ad_ev_enqueue_sidebar_styles() {
+    wp_enqueue_style(
+        'sidbar-styles',
+        plugins_url('/sidebar.css', __FILE__),
+        array(),
+        '1.0.0'
+    );
+}
