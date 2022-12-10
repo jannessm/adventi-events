@@ -144,21 +144,38 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
         $query = new WP_Query($args);
 
         $post_counter = 0;
+
+        $recurrent = [];
         
         if ($query->have_posts()) {
-            while ($query->have_posts() && $post_counter < 5) {
+            while ($query->have_posts() && $post_counter < $atts['n']) {
                 $query->the_post();
                 $event = AdventiEvent::from_post(get_the_ID());
 
-                $content .= '
-                <a href="'. get_permalink() .'">
-                    <div class="ad_ev_sidebar_event">
-                        <h4>'. strtoupper(the_title('','',false)) .'</h4>
-                        <hr>
-                        ' . $event->date->format('d.m.Y, H:i') .'<br>
-                        ' . $event->location->address . '
-                    </div>
-                </a>';
+                foreach($recurrent as $r_event) {
+                    if ($r_event->date < $event->date && $post_counter < $atts['n']) {
+                        $content .= get_event_link($r_event);
+                        $post_counter++;
+                    }
+                    if ($post_counter >= $atts['n']) {
+                        break;
+                    }
+                }
+
+                if ($post_counter >= $atts['n']) {
+                    break;
+                }
+
+                if ($event->is_recurrent()) {
+                    $recurrent[] = $event;
+                }
+
+                $content .= get_event_link($event);
+
+                foreach ($recurrent as $r_event) {
+                    $date = clone $event->date;
+                    $r_event->update_date($date->add(new DateInterval('P1D')));
+                }
                 $post_counter++;
             }
         }
@@ -168,6 +185,19 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
         </div>';
     
     return $content;
+}
+
+function get_event_link($event) {
+    $post = get_post($event->post_id);
+    return '
+    <a href="'. get_permalink($post) .'">
+        <div class="ad_ev_sidebar_event">
+            <h4>'. strtoupper(get_the_title($post)) .'</h4>
+            <hr>
+            ' . $event->date->format('d.m.Y, H:i') .'<br>
+            ' . $event->location->address . '
+        </div>
+    </a>';
 }
 
 add_shortcode('ad_ev_previews', 'ad_ev_previews');

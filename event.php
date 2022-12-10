@@ -12,7 +12,8 @@ class AdventiEvent {
         'location',
         'location_lng',
         'location_lat',
-        'special'
+        'special',
+        'exclude_dates'
     ];
 
     public $post_id;
@@ -36,6 +37,7 @@ class AdventiEvent {
         $location_lat = null,
         $special = null,
         $original_input = null,
+        $exclude_dates = null,
     ) {
 		$this->options = get_option( 'ad_ev_options' );
 
@@ -52,6 +54,7 @@ class AdventiEvent {
         $this->special = $this->set_value($special, '');
         
         $this->original_input = $original_input;
+        $this->exclude_dates = array_map(fn($i) => trim($i), explode(',', $exclude_dates));
 
         $this->split_preacher_special();
 
@@ -64,14 +67,15 @@ class AdventiEvent {
 		$date = get_post_meta(           $post_id, AD_EV_META . 'date', true );
 		$preacher = get_post_meta(       $post_id, AD_EV_META . 'preacher', true );
 		$recurrence = get_post_meta(     $post_id, AD_EV_META . 'recurrence', true );
-		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image', true );
+		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image_id', true );
 		$location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
 		$location_lng = get_post_meta(   $post_id, AD_EV_META . 'location_lng', true ); 
 		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true ); 
 		$special = get_post_meta(        $post_id, AD_EV_META . 'special', true ) === "true";
         $original_input = get_post_meta( $post_id, AD_EV_META . 'original_input', true);
+        $exclude_dates = get_post_meta(  $post_id, AD_EV_META . 'exclude_dates', true);
 
-        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $location, $location_lng, $location_lat, $special, $original_input);
+        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $location, $location_lng, $location_lat, $special, $original_input, $exclude_dates);
     }
 
     public function is_recurrent() {
@@ -93,6 +97,7 @@ class AdventiEvent {
             AD_EV_META . 'location_lat' => $this->location->lat,
             AD_EV_META . 'special' => $this->special,
             AD_EV_META . 'original_input' => $this->original_input,
+            AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
         ];
     }
 
@@ -119,7 +124,7 @@ class AdventiEvent {
         }
     }
 
-    public function update_date() {
+    public function update_date($now=null) {
         $weeks = 0;
         switch ($this->recurrence) {
             case AdventiEventsIntervals::WEEKLY->value:
@@ -140,9 +145,16 @@ class AdventiEvent {
         }
         
         if ($weeks > 0) {
-            $now = new DateTime();
+            if (!$now) {
+                $now = new DateTime();
+            }
             while ($now > $this->date) {
                 $this->date->add(new DateInterval('P'.$weeks.'W'));
+                $date = $this->date->format('d.m.Y');
+                while (in_array($date, $this->exclude_dates)) {
+                    $this->date->add(new DateInterval('P'.$weeks.'W'));
+                    $date = $this->date->format('d.m.Y');
+                }
             }
         }
     }

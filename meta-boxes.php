@@ -84,6 +84,10 @@ abstract class AdventiEventsMetaBox {
 		</select>
 		<br>
 
+		<label for="<?php echo AD_EV_META; ?>exclude_dates" class="ad_ev_meta_box">Exkludiere Daten</label>
+		<input name="<?php echo AD_EV_META; ?>exclude_dates" value="<?php echo join(', ', $event->exclude_dates); ?>" class="ad_ev_meta_box">
+		<p class="hint">Die Daten müssen das Format 01.01.2022 haben. Alle Daten werden per , getrennt.</p><br>
+
 		<label for="<?php echo AD_EV_META; ?>location" class="ad_ev_meta_box">Ort</label>
 		<input id="location_input" name="<?php echo AD_EV_META; ?>location" value="<?php echo $event->location->address; ?>" class="ad_ev_meta_box">
 		<input id="location_lng" name="<?php echo AD_EV_META; ?>location_lng" value="<?php echo $event->location->lng; ?>" type="hidden">
@@ -142,7 +146,7 @@ abstract class AdventiEventsMetaBox {
 			</p>
 
 			<!-- A hidden input to set and post the chosen image id -->
-			<input class="image-id" name="<?php echo AD_EV_META; ?>image" type="hidden" value="<?php echo esc_attr( $image_id ); ?>">
+			<input class="image-id" name="<?php echo AD_EV_META; ?>image_id" type="hidden" value="<?php echo esc_attr( $image_id ); ?>">
 		</div>
 		<br>
 		
