@@ -11,7 +11,6 @@ function ad_ev_header($atts = [], $content = '', $tag = '') {
 add_shortcode('ad_ev_preacher', 'ad_ev_preacher');
 function ad_ev_preacher($atts = [], $content = '', $tag = '') {
     $preacher = get_post_meta( get_post()->ID, AD_EV_META . 'preacher', true );
-    var_dump(get_post_meta( get_post()->ID, AD_EV_META . 'special', true ));
     
     // normalize attribute keys, lowercase
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -119,12 +118,13 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
 
     $event_page = $atts['event_page'];
 
-    ?>
+    $content = '
     <div id="ad_ev_sidebar">
+        <div class="ad_ev_sidebar_event ad_ev_sidebar_top">
+            <a href="'. $event_page .'">VERANSTALTUNGEN</a>
+        </div>
+    ';
 
-        <div class="ad_ev_sidebar_event ad_ev_sidebar_top"><a href="<?php echo $event_page; ?>">VERANSTALTUNGEN</a></div>
-
-    <?php
         $args = array(
             'post_type' => 'event',
             'posts_per_page' => $atts['n'] + 1,
@@ -145,29 +145,29 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
 
         $post_counter = 0;
         
-        if ($query->have_posts()) :
-            while ($query->have_posts() && $post_counter < 5) :
+        if ($query->have_posts()) {
+            while ($query->have_posts() && $post_counter < 5) {
                 $query->the_post();
                 $event = AdventiEvent::from_post(get_the_ID());
-        ?>
-                    
-                <a href="<?php the_permalink();?>">
-                    <div class="ad_ev_sidebar_event">
-                        <h4><?php echo strtoupper(the_title('','',false)); ?></h4>
-                        <hr>
-                        <?php echo $event->date->format('d.m.Y, H:i');?><br>
-                        <?php echo $event->location->address; ?>
-                    </div>
-                </a>
 
-        <?php
+                $content .= '
+                <a href="'. get_permalink() .'">
+                    <div class="ad_ev_sidebar_event">
+                        <h4>'. strtoupper(the_title('','',false)) .'</h4>
+                        <hr>
+                        ' . $event->date->format('d.m.Y, H:i') .'<br>
+                        ' . $event->location->address . '
+                    </div>
+                </a>';
                 $post_counter++;
-            endwhile;
-        endif;
-        ?>
-            <a href="<?php echo $event_page ?>" style="margin: 10px"> Mehr ></a>
-        </div>
-    <?php
+            }
+        }
+        
+        $content .= '
+            <a href="' . $event_page . '" style="margin: 10px"> Mehr ></a>
+        </div>';
+    
+    return $content;
 }
 
 add_shortcode('ad_ev_previews', 'ad_ev_previews');
@@ -190,9 +190,18 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
         $atts['type'] == 'non-recurrent' ||
         $atts['type'] == 'all') {
         array_push($meta_query, [
-            'key' => AD_EV_META . 'special',
-            'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
-            'compare' => 'IN'
+            'relation' => 'AND',
+            [
+                'key' => AD_EV_META . 'special',
+                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
+                'compare' => 'IN'
+            ],
+            [
+                'key' => AD_EV_META . 'date',
+                'value' => (new DateTime('now'))->format('Y-m-d'),
+                'compare' => '>',
+                'type' => 'DATE',
+            ]
         ]);
     }
     if ($atts['type'] == 'normal' ||
@@ -200,9 +209,18 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
         $atts['type'] == 'non-recurrent' ||
         $atts['type'] == 'all') {
         array_push($meta_query, [
-            'key' => AD_EV_META . 'special',
-            'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
-            'compare' => 'NOT IN'
+            'relation' => 'AND',
+            [
+                'key' => AD_EV_META . 'special',
+                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
+                'compare' => 'NOT IN'
+            ],
+            [
+                'key' => AD_EV_META . 'date',
+                'value' => (new DateTime('now'))->format('Y-m-d'),
+                'compare' => '>',
+                'type' => 'DATE',
+            ]
         ]);
     }
     if ($atts['type'] == 'recurrent' ||
@@ -232,43 +250,47 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
     $formatter = new IntlDateFormatter('de_DE', IntlDateFormatter::NONE, 
     IntlDateFormatter::NONE, NULL, NULL, "MMM");
 
-    $elemnent_width = 'calc((100% - 64px * ' . $atts['cols'] - 1 . ') / ' . $atts['cols'] . ')';
-    
-    ?><div class="ad_events_row"><?php
-    if ($query->have_posts()) :
-        while ($query->have_posts() && $post_counter < $atts['n']) :
+    $element_width = 'calc((100% - 64px * ' . $atts['cols'] - 1 . ') / ' . $atts['cols'] . ')';
+
+    $content = '<div class="ad_events_row">';
+
+    if ($query->have_posts()) {
+        while ($query->have_posts() && $post_counter < $atts['n']) {
 
             $query->the_post();
             $event = AdventiEvent::from_post(get_the_ID());
             $img = wp_get_attachment_image_url($event->image_id, 'medium_size');
             $month = $formatter->format($event->date);
-    ?>
-                
+
+            $content .= '
             <a class="ad_event"
-               href="<?php the_permalink() ?>" 
-          	   style="background-image: url(<?php echo $img ?>); width: <?php echo $elemnent_width;?>">
+            href="'. get_permalink() .'" 
+            style="background-image: url('.$img.'); width: '. $element_width .'">
                 <div class="ad_event_date">
-                <h4 style="margin:0"><?php echo $month;?></h4>
-                <h2 style="margin:0"><?php echo $event->date->format('d.'); ?></h2>
+                <h4 style="margin:0">'. $month .'</h4>
+                <h2 style="margin:0">'. $event->date->format('d.') .'</h2>
                 </div>
                 <div class="ad_event_text">
-                    <h4><?php echo strtoupper(the_title('','',false)); ?></h4>
-                    <?php the_excerpt()?>
+                    <h4>'. strtoupper(the_title('','',false)) .'</h4>
+                    '. get_the_excerpt() .'
                 </div>
                 <div class="ad_event_location">
                     <div id="ad_ev_loc"></div>
                     <div class="ad_event_location_text">
-                        <?php echo strtoupper($event->location->address);?>
+                        '. strtoupper($event->location->address) .'
                     </div>
                 </div>
-          </a>
-    <?php
+            </a>';
+
             $post_counter++;
-        endwhile;
-    endif;
-    ?>
-    </div>
-    <?php
+        }
+    } else {
+        $content .= 'Keine Veranstaltungen geplant.';
+    }
+
+    $content .= '</div>';
+
+    return $content;
 }
 
 function _ad_ev_label_value($label, $value, $add_label) {

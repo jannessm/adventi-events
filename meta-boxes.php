@@ -9,7 +9,7 @@ abstract class AdventiEventsMetaBox {
 	 */
 	public static function add() {
 		add_meta_box(
-			'ad_ev_meta_box',  // Unique ID
+			'ad_ev_meta_box',  			// Unique ID
 			'Adventi Event', 			// Box title
 			[ self::class, 'html' ],    // Content callback, must be of type callable
 			'event'                     // Post type
