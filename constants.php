@@ -20,7 +20,7 @@ enum AdventiEventsSpecials: string {
     case E = 'Erntedank';
     case T = 'Taufgottesdienst';
     case J = 'Jugendsabbat';
-    case G = 'Gemeindestunde';
+    case G = 'Gottesdienst mit Gemeindestunde';
     case W = 'Waldgottesdienst';
 
     public static function tryFromName(string $name): ?static {

@@ -15,15 +15,29 @@ add_action( 'ad_ev_settings_content', 'ad_ev_section_text_page' );
 function ad_ev_section_text_page() {
 	global $ad_ev_active_tab;
     $options = get_option( 'ad_ev_options' );
+
+	$option_labels = [
+		'default_text' => 'Normaler Gottesdienst',
+		'default_communion_text' => 'Abendmahl Gottesdienst',
+		'default_thanks_giving_text' => 'Erntedank Gottesdienst',
+		'default_baptism_text' => 'Taufgottesdienst',
+		'default_youth_service_text' => 'Jugendgottesdienst',
+		'default_community_hour_text' => 'Gottesdienst mit Gemeindestunde',
+		'default_forest_service_text' => 'Waldgottesdienst'];
+
+	$image_ids = [];
+
+	foreach($option_labels as $key => $label) {
+		// var_dump($options[AD_EV_FIELD . $key . '_img']);
+		$image_ids[$key] = !!$options[AD_EV_FIELD . $key . '_img'] ? $options[AD_EV_FIELD . $key . '_img'] : '';
+		// var_dump($image_ids[$key] . '\n');
+	}
 	
     if ( 'text' != $ad_ev_active_tab ) {
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_text', 'Standard Beschreibung', 'z.B. ', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_communion_text', '', '', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_thanks_giving_text', '', '', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_baptism_text', '', '', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_youth_service_text', '', '', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_community_hour_text', '', '', '', TRUE);
-		ad_ev_settings_textarea(AD_EV_FIELD . 'default_forest_service_text', '', '', '', TRUE);
+		foreach($option_labels as $key => $label) {
+			ad_ev_image_selector($image_ids[$key], '', AD_EV_FIELD . $key . '_img', '', true);
+			ad_ev_settings_textarea(AD_EV_FIELD . $key, '', '', '', TRUE);
+		}
 		return;
     }
 
@@ -37,12 +51,10 @@ function ad_ev_section_text_page() {
 Wir feiern Gottesdienst mit neuen und alten Liedern, mit einer Gesprächsrunde über den Glauben und mit einer Predigt.
 	
 [ad_ev_map]';
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_text', 'Standard Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_communion_text', 'Abendmahl Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_thanks_giving_text', 'Erntedank Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_baptism_text', 'Taufgottesdienst Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_youth_service_text', 'Jugendgottesdienst Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_community_hour_text', 'Gemeindestunde Beschreibung', 'z.B. ' . $example_text, '', FALSE);
-    ad_ev_settings_textarea(AD_EV_FIELD . 'default_forest_service_text', 'Waldgottesdienst Beschreibung', 'z.B. ' . $example_text, '', FALSE);
+
+	foreach($option_labels as $key => $label) {
+		ad_ev_image_selector($image_ids[$key], $label . ' Bild', AD_EV_FIELD . $key . '_img', '', $hidden=FALSE);
+		ad_ev_settings_textarea(AD_EV_FIELD . $key, $label, 'z.B. ' . $example_text, '', FALSE);
+	}
 }
 

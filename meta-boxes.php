@@ -110,7 +110,7 @@ abstract class AdventiEventsMetaBox {
 			'args',
 			array(
 				'image_id' => $image_id,
-				'image_container' => "#img-preview-container"
+				'image_container' => ".img-preview-container"
 			)
 		);
 		
@@ -127,7 +127,7 @@ abstract class AdventiEventsMetaBox {
 		<label for="<?php echo AD_EV_META; ?>image" class="ad_ev_meta_box">Titelbild</label>
 		<div class="ad_ev_meta_box" style="display: inline-block">
 			<!-- Your image container, which can be manipulated with js -->
-			<div id="img-preview-container" style="max-width:300px !important">
+			<div class="img-preview-container" style="max-width:300px !important">
 				<?php if ( $is_image ) : ?>
 					<img src="<?php echo $image_src[0] ?>" alt="" style="" />
 				<?php endif; ?>

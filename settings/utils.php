@@ -84,18 +84,19 @@ function ad_ev_settings_textarea($field_name, $label, $placeholder, $descr, $hid
 
 function ad_ev_image_selector($image_id, $label, $field_name, $descr, $hidden=FALSE) {
     global $ad_ev_label_style;
+    $options = get_option( 'ad_ev_options' );
+
     wp_localize_script(
         'image-select',
         'args',
         array(
-            'image_id' => $image_id,
-            'image_container' => '#img-preview-container'
+            'image_container' => '.img-preview-container'
         )
     );
 
     if ($hidden) {
         ?>
-            <input id="<?php echo esc_attr( $field_name ); ?>" class="image-id" name="ad_ev_options[<?php echo esc_attr( $field_name ); ?>]" type="hidden" value="<?php echo isset( $options[ $field_name ] ) ? $options[ $field_name ] : '' ?>">
+            <input id="<?php echo esc_attr( $field_name ); ?>" class="image-id" name="ad_ev_options[<?php echo esc_attr( $field_name ); ?>]" type="hidden" value="<?php echo !!$options[ $field_name ] ? $options[ $field_name ] : '' ?>">
         <?php
         return;
     }
@@ -113,7 +114,7 @@ function ad_ev_image_selector($image_id, $label, $field_name, $descr, $hidden=FA
     <label for="<?php echo esc_attr( $field_name ); ?>" style="<?php echo $ad_ev_label_style; ?>"><?php echo $label; ?></label>
 	<div style="display: inline-block">
 		<!-- Your image container, which can be manipulated with js -->
-		<div id="img-preview-container" style="max-width:300px !important">
+		<div class="img-preview-container" style="max-width:300px !important">
 			<?php if ( $is_image ) : ?>
 				<img src="<?php echo $image_src[0] ?>" alt="" style="" />
 			<?php endif; ?>
