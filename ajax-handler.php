@@ -39,7 +39,7 @@ function ad_ev_update() {
 
         foreach ($events as $e) {
             $message .= 'Prediger: ' . $e->preacher . '\n';
-            $message .= 'Ort: ' . $e->location . '\n';
+            $message .= 'Ort: ' . $e->location->address . '\n';
             $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '\n';
             $message .= 'Special: ' . $e->special . '\n\n';
         }
