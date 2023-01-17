@@ -6,7 +6,6 @@ let ad_ev_address_hints = [];
 let $;
 
 async function init_map() {
-	console.log(leaflet_options);
 	await waitFor(1);
 
 	map = L.map(leaflet_options.map_id);
@@ -102,9 +101,7 @@ function updateLocation(point) {
 	const marker = L.marker(point).bindPopup(leaflet_options.location);
 
 	if (!!leaflet_options.input_lng && !!leaflet_options.input_lat) {
-		console.log(point);
 		$('#' + leaflet_options.input_lng).val(point.lng);
-		console.log($('#' + leaflet_options.input_lng).val());
 		$('#' + leaflet_options.input_lat).val(point.lat);
 	}
 	

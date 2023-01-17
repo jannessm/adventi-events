@@ -38,14 +38,31 @@ enum AdventiEventsSpecials: string {
 
 
 class AdventiEventPosition {
+    public $is_real = TRUE;
     public $address = '';
     public $lng = 0.0;
     public $lat = 0.0;
 
-    public function __construct($address, $lng, $lat) {
+    public function __construct($is_real, $address, $lng, $lat) {
+        $this->is_real = $is_real;
         $this->address = $address;
         $this->lng = floatval($lng);
         $this->lat = floatval($lat);
     }
 }
 
+class AdventiEventZoomData {
+    public $is_zoom = TRUE;
+    public $id = '';
+    public $pwd = '';
+    public $tel = '';
+    public $link = '';
+
+    public function __construct($is_zoom=TRUE, $id='', $pwd='', $tel='', $link='') {
+        $this->is_zoom = $is_zoom;
+        $this->id = $id;
+        $this->pwd = $pwd;
+        $this->tel = $tel;
+        $this->link = $link;
+    }
+}

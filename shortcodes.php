@@ -5,6 +5,7 @@ function ad_ev_header($atts = [], $content = '', $tag = '') {
     $content .= ad_ev_date($atts);
     $content .= ad_ev_preacher($atts);
     $content .= ad_ev_location($atts);
+    $content .= ad_ev_zoom($atts);
     return $content;
 }
 
@@ -60,6 +61,50 @@ function ad_ev_location($atts = [], $content = '', $tag = '') {
 	);
 
     return _ad_ev_label_value('Ort', $location, strtoupper($atts['label']) == 'TRUE');
+}
+
+add_shortcode('ad_ev_zoom', 'ad_ev_zoom');
+function ad_ev_zoom($atts = [], $content = '', $tag = '') {
+    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) === 'true';
+    $zoom_id = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_id', true );
+    $zoom_pwd = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_pwd', true );
+    $zoom_link = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_link', true );
+    $zoom_tel = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_tel', true );
+    
+    // normalize attribute keys, lowercase
+	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+
+	// override default attributes with user attributes
+	$atts = shortcode_atts(
+		array(
+			'label' => 'TRUE',
+		), $atts, $tag
+	);
+    $label = strtoupper($atts['label']) == 'TRUE';
+
+    wp_localize_script(
+        'zoom-details',
+        'zoom_details',
+        array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'post_id' => get_post()->ID,
+            'label' => $label
+        )
+    );
+
+    $html = '';
+
+    if ($is_zoom) {
+        if (!!$zoom_id) {
+            $html .= _ad_ev_label_value('Zoom ID', $zoom_id, $label);
+        }
+        if (!!$zoom_pwd || !!$zoom_link || !!$zoom_tel) {
+            $html .= '<form id="ad_ev_zoom_details">' . do_shortcode('[hcaptcha]') . '<input id="ad_ev_zoom_details" type="submit" value="Zugangsdaten"></form>';
+            $html .= '<div id="ad_ev_details"></div>';
+        }
+    }
+
+    return $html;
 }
 
 add_shortcode('ad_ev_map', 'ad_ev_map');
@@ -292,6 +337,14 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
             $img = wp_get_attachment_image_url($event->image_id, 'medium_size');
             $month = $formatter->format($event->date);
 
+            $location = '';
+
+            if ($event->location->is_real) {
+                $location = $event->location->address;
+            } elseif ($event->zoom->is_zoom && !!$event->zoom->id) {
+                $location = 'Zoom: ' . $event->zoom->id;
+            }
+
             $content .= '
             <a class="ad_event"
             href="'. get_permalink() .'" 
@@ -302,12 +355,12 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
                 </div>
                 <div class="ad_event_text">
                     <h4>'. strtoupper(the_title('','',false)) .'</h4>
-                    '. get_the_excerpt() .'
+                    '. wp_trim_words(get_the_excerpt(), 30) .'
                 </div>
                 <div class="ad_event_location">
                     <div id="ad_ev_loc"></div>
                     <div class="ad_event_location_text">
-                        '. strtoupper($event->location->address) .'
+                        '. strtoupper($location) .'
                     </div>
                 </div>
             </a>';

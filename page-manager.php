@@ -67,7 +67,7 @@ class AdventiEventsPageManager {
             'post_status'   => 'publish',			// Post Status
             'post_author'   => 1,					// Post Author ID
             'post_name'     => $page_slug,			// Slug of the Post
-            'meta_input'    => $event->get_meta_array()
+            'meta_input'    => $event->get_meta_array(),
         );
 
         $new_page_id = wp_insert_post($new_page);

@@ -63,3 +63,27 @@ function ad_ev_enqueue_media_scripts($hook) {
         true
     );
 }
+
+function ad_ev_enqueue_meta_box_scripts($hook) {
+    if ( 'event_page_adventi_events' !== $hook && 'post-new.php' !== $hook && 'post.php' !== $hook ) {
+		return;
+	}
+
+    wp_enqueue_script(
+        'meta-box-scripts',
+        plugins_url( '/meta-box-scripts.js', __FILE__),
+        array( 'jquery'),
+        '1.0.0',
+        true
+    );
+}
+
+function ad_ev_enqueue_zoom_details($hook) {
+    wp_enqueue_script(
+        'zoom-details',
+        plugins_url( '/zoom-details.js', __FILE__),
+        array( 'jquery'),
+        '1.0.0',
+        true
+    );
+}

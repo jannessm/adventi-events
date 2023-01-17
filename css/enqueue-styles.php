@@ -45,3 +45,12 @@ function ad_ev_enqueue_preview_styles() {
         '1.0.0'
     );
 }
+
+function ad_ev_enqueue_button_styles() {
+    wp_enqueue_style(
+        'button-styles',
+        plugins_url( '/button.css', __FILE__),
+        array(),
+        '1.0.0'
+    );
+}

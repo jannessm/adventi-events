@@ -31,6 +31,12 @@ abstract class AdventiEventsMetaBox {
 					$name,
 					$_POST[$name]
 				);
+			} elseif (in_array($key,['is_real', 'is_zoom', 'special'])) {
+				update_post_meta(
+					$post_id,
+					$name,
+					"false"
+				);
 			}
 		}
 	}
@@ -87,6 +93,9 @@ abstract class AdventiEventsMetaBox {
 		<label for="<?php echo AD_EV_META; ?>exclude_dates" class="ad_ev_meta_box">Exkludiere Daten</label>
 		<input name="<?php echo AD_EV_META; ?>exclude_dates" value="<?php echo join(', ', $event->exclude_dates); ?>" class="ad_ev_meta_box">
 		<p class="hint">Die Daten müssen das Format 01.01.2022 haben. Alle Daten werden per , getrennt.</p><br>
+		
+		<label for="<?php echo AD_EV_META; ?>is_real" class="ad_ev_meta_box">Präsenzveranstaltung</label>
+		<input type="checkbox" id="is_real" name="<?php echo AD_EV_META; ?>is_real" value="true" <?php echo checked($event->location->is_real);?>><br>
 
 		<label for="<?php echo AD_EV_META; ?>location" class="ad_ev_meta_box">Ort</label>
 		<input id="location_input" name="<?php echo AD_EV_META; ?>location" value="<?php echo $event->location->address; ?>" class="ad_ev_meta_box">
@@ -95,8 +104,20 @@ abstract class AdventiEventsMetaBox {
 		<div id="location_proposals" class="ad_ev_meta_box"></div>
 		<br>
 
+		<label for="<?php echo AD_EV_META; ?>is_zoom" class="ad_ev_meta_box">Zoomveranstaltung</label>
+		<input type="checkbox" id="is_zoom" name="<?php echo AD_EV_META; ?>is_zoom" value="true" <?php echo checked($event->zoom->is_zoom); ?>><br>
+		<label for="<?php echo AD_EV_META; ?>zoom_id" class="ad_ev_meta_box">Zoom ID</label>
+		<input id="zoom_id" name="<?php echo AD_EV_META; ?>zoom_id" value="<?php echo $event->zoom->id; ?>" class="ad_ev_meta_box"><br>
+		<label for="<?php echo AD_EV_META; ?>zoom_pwd" class="ad_ev_meta_box">Zoom Passwort</label>
+		<input id="zoom_pwd" name="<?php echo AD_EV_META; ?>zoom_pwd" value="<?php echo $event->zoom->pwd; ?>" class="ad_ev_meta_box"><br>
+		<label for="<?php echo AD_EV_META; ?>zoom_tel" class="ad_ev_meta_box">Zoom Tel</label>
+		<input id="zoom_tel" name="<?php echo AD_EV_META; ?>zoom_tel" value="<?php echo $event->zoom->tel; ?>" class="ad_ev_meta_box"><br>
+		<label for="<?php echo AD_EV_META; ?>zoom_link" class="ad_ev_meta_box">Zoom Link</label>
+		<input id="zoom_link" name="<?php echo AD_EV_META; ?>zoom_link" value="<?php echo $event->zoom->link; ?>" class="ad_ev_meta_box"><br>
+		<p class="hint">Passwort, Link und Telefonnummer werden erst nach Captcha angezeigt.</p><br>
+
 		<label for="<?php echo AD_EV_META; ?>special" class="ad_ev_meta_box">Besondere Veranstaltung</label>
-		<input type="checkbox" name="<?php echo AD_EV_META; ?>special" <?php checked($event->is_special()); ?> value="true">
+		<input type="checkbox" name="<?php echo AD_EV_META; ?>special" value="true" <?php echo checked($event->is_special())?>><br>
 
 		<div id="location_prev" class="ad_ev_meta_box"></div>
 		<?php

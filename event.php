@@ -9,9 +9,15 @@ class AdventiEvent {
         'preacher',
         'recurrence',
         'image_id',
+        'is_real',
         'location',
         'location_lng',
         'location_lat',
+        'is_zoom',
+        'zoom_id',
+        'zoom_pwd',
+        'zoom_tel',
+        'zoom_link',
         'special',
         'exclude_dates'
     ];
@@ -22,6 +28,7 @@ class AdventiEvent {
     public $recurrence;
     public $image_id;
     public $location;
+    public $zoom;
     public $special;
     public $original_input;
     private $options;
@@ -32,12 +39,18 @@ class AdventiEvent {
         $preacher = null,
         $recurrence = null,
         $image_id = null,
+        $is_real = null,
         $location = null,
         $location_lng = null,
         $location_lat = null,
         $special = null,
         $original_input = null,
         $exclude_dates = null,
+        $is_zoom = null,
+        $zoom_id = null,
+        $zoom_pwd = null,
+        $zoom_tel = null,
+        $zoom_link = null,
     ) {
 		$this->options = get_option( 'ad_ev_options' );
 
@@ -47,11 +60,29 @@ class AdventiEvent {
         $this->recurrence = $this->set_value($recurrence, AdventiEventsIntervals::ONCE->value);
         $this->image_id = $this->set_value($image_id, $this->options[AD_EV_FIELD . 'default_image']);
         $this->location = new AdventiEventPosition(
+            $this->set_value($is_real, "true") === "true",
             $this->set_value($location, $this->options[AD_EV_FIELD . 'church_location']),
             $this->set_value($location_lng, $this->options[AD_EV_FIELD . 'church_lng']),
             $this->set_value($location_lat, $this->options[AD_EV_FIELD . 'church_lat']),
         );
-        $this->special = $this->set_value($special, '');
+        if (!!$is_zoom || !!$zoom_id || !!$zoom_pwd || !!$zoom_tel || !!$zoom_link) {
+            $this->zoom = new AdventiEventZoomData(
+                $this->set_value($is_zoom, "false") === "true",
+                $this->set_value($zoom_id, ''),
+                $this->set_value($zoom_pwd, ''),
+                $this->set_value($zoom_tel, ''),
+                $this->set_value($zoom_link, '')
+            );
+        } else {
+            $this->zoom = new AdventiEventZoomData(
+                $this->set_value($is_zoom, "true") === "true",
+                $this->set_value($zoom_id, $this->options[AD_EV_FIELD . 'zoom_id']),
+                $this->set_value($zoom_pwd, $this->options[AD_EV_FIELD . 'zoom_pwd']),
+                $this->set_value($zoom_tel, $this->options[AD_EV_FIELD . 'zoom_tel']),
+                $this->set_value($zoom_link, $this->options[AD_EV_FIELD . 'zoom_link'])
+            );   
+        }
+        $this->special = $this->set_value($special, 'false') === "true";
         
         $this->original_input = $original_input;
         $this->exclude_dates = array_map(fn($i) => trim($i), explode(',', $exclude_dates));
@@ -68,14 +99,23 @@ class AdventiEvent {
 		$preacher = get_post_meta(       $post_id, AD_EV_META . 'preacher', true );
 		$recurrence = get_post_meta(     $post_id, AD_EV_META . 'recurrence', true );
 		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image_id', true );
-		$location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
+		
+        $is_real = get_post_meta(        $post_id, AD_EV_META . 'is_real', true );
+        $location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
 		$location_lng = get_post_meta(   $post_id, AD_EV_META . 'location_lng', true ); 
-		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true ); 
-		$special = get_post_meta(        $post_id, AD_EV_META . 'special', true ) === "true";
+		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true );
+
+		$special = get_post_meta(        $post_id, AD_EV_META . 'special', true );
         $original_input = get_post_meta( $post_id, AD_EV_META . 'original_input', true);
         $exclude_dates = get_post_meta(  $post_id, AD_EV_META . 'exclude_dates', true);
+        
+        $is_zoom = get_post_meta(        $post_id, AD_EV_META . 'is_zoom', true);
+        $zoom_id = get_post_meta(        $post_id, AD_EV_META . 'zoom_id', true);
+        $zoom_pwd = get_post_meta(       $post_id, AD_EV_META . 'zoom_pwd', true);
+        $zoom_tel = get_post_meta(       $post_id, AD_EV_META . 'zoom_tel', true);
+        $zoom_link = get_post_meta(      $post_id, AD_EV_META . 'zoom_link', true);
 
-        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $location, $location_lng, $location_lat, $special, $original_input, $exclude_dates);
+        return new AdventiEvent($post_id, $date, $preacher, $recurrence, $image_id, $is_real, $location, $location_lng, $location_lat, $special, $original_input, $exclude_dates, $is_zoom, $zoom_id, $zoom_pwd, $zoom_tel, $zoom_link);
     }
 
     public function is_recurrent() {

@@ -49,3 +49,19 @@ function ad_ev_update() {
 
     return $events;
 }
+
+function ad_ev_zoom_details_handler() {
+    $result = hcaptcha_request_verify($_POST['h_response']);
+
+    if ( null !== $result ) {
+        wp_send_json(['err' => 'captcha_err', 'res' => $result, 'hres' => $_POST['h_response']]);
+        return;
+    }
+
+    $zoom_pwd = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_pwd', true );
+    $zoom_link = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_link', true );
+    $zoom_tel = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_tel', true );
+
+    wp_send_json(['pwd' => $zoom_pwd, 'link' => $zoom_link, 'tel' => $zoom_tel]);
+    wp_die();
+}

@@ -5,7 +5,7 @@ include_once dirname(__FILE__) . '/utils.php';
 add_action( 'ad_ev_settings_tab', 'ad_ev_section_map_tab', 1 );
 function ad_ev_section_map_tab(){
 	global $ad_ev_active_tab; ?>
-	<a class="nav-tab <?php echo $ad_ev_active_tab == 'map' ? 'nav-tab-active' : ''; ?>" href="<?php echo admin_url('edit.php?post_type=event&page=adventi_events&tab=map'); ?>"><?php echo __('Karte', 'adventi_events'); ?> </a>
+	<a class="nav-tab <?php echo $ad_ev_active_tab == 'map' ? 'nav-tab-active' : ''; ?>" href="<?php echo admin_url('edit.php?post_type=event&page=adventi_events&tab=map'); ?>"><?php echo __('Orte', 'adventi_events'); ?> </a>
 	<?php
 }
 
@@ -40,8 +40,8 @@ function ad_ev_section_map_page() {
         )
     );
     ?>
- 
-	<h3><?php __( 'Karte', 'adventi_events' ); ?></h3>
+
+    <h3>Präsenzort</h3>
 
     <?php
         ad_ev_settings_input('text', AD_EV_FIELD . 'church_location', 'Adresse', 'z.B. Lucy-Lameck-Straße 27, 12049 Berlin', 'Adresse der Kirche');
@@ -52,10 +52,14 @@ function ad_ev_section_map_page() {
         ad_ev_settings_input('text', AD_EV_FIELD . 'church_lat', 'Latitude', 'z.B. 52.4827523', 'Latitude der Adresse (wird für die Kartenansicht genutzt)');
         ad_ev_settings_input('text', AD_EV_FIELD . 'graphhopper_api_key', 'Graphhopper API Key', 'API Key für Kartendarstellung und Routenplaner', 'Für die Kartenansicht wird die Graphhopper API benötigt');
     ?>
-    
-    <div id="location_prev" style="height: 300px; margin-top: 50px;"></div>
 
-
+    <h3>Zoom</h4>
+    <?php
+        ad_ev_settings_input('text', AD_EV_FIELD . 'zoom_id', 'Meeting ID', 'z.B. 444 333 999', 'Standard Zoom Meeting');
+        ad_ev_settings_input('text', AD_EV_FIELD . 'zoom_pwd', 'Passwort', 'z.B. 144 000', 'Passwort für das Meeting');
+        ad_ev_settings_input('text', AD_EV_FIELD . 'zoom_tel', 'Tel.', 'z.B. +49 444 333 999', 'Nummer um telefonisch beizutreten');
+        ad_ev_settings_input('text', AD_EV_FIELD . 'zoom_link', 'Link', 'z.B. https://zoom.us/tolles/meeting', 'Link um direkt beizutreten');
+    ?>
 	<?php
 }
 

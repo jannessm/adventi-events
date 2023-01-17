@@ -45,6 +45,12 @@ function updateLocation(point) {
 }
 
 jQuery(document).ready(async (_$) => {
+	try {
+		if (!leaflet_options) return;
+	} catch {
+		return;
+	}
+
 	$ = _$;
 	ad_ev_map = await init_map();
 
