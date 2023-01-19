@@ -69,9 +69,9 @@ class AdventiEvent {
             $this->set_value($location_lng, $this->options[AD_EV_FIELD . 'church_lng']),
             $this->set_value($location_lat, $this->options[AD_EV_FIELD . 'church_lat']),
         );
-        if (!!$is_zoom || !!$zoom_id || !!$zoom_pwd || !!$zoom_tel || !!$zoom_link) {
+        if (!!$zoom_id || !!$zoom_pwd || !!$zoom_tel || !!$zoom_link) {
             $this->zoom = new AdventiEventZoomData(
-                $this->set_value($is_zoom, true),
+                $is_zoom,
                 $this->set_value($zoom_id, ''),
                 $this->set_value($zoom_pwd, ''),
                 $this->set_value($zoom_tel, ''),

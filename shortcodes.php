@@ -51,7 +51,7 @@ add_shortcode('ad_ev_location', 'ad_ev_location');
 function ad_ev_location($atts = [], $content = '', $tag = '') {
     $is_real = get_post_meta( get_post()->ID, AD_EV_META . 'is_real', true ) == 'true';
     $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) == 'true';
-	
+
 	$html = '';
 	if ($is_real) {
 		$html .= ad_ev_location_present($atts, $content, $tag);
@@ -80,7 +80,7 @@ function ad_ev_location_present($atts = [], $content = '', $tag = '') {
 
 
 function ad_ev_zoom($atts = [], $content = '', $tag = '') {
-    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) === 'true';
+    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) == 'true';
     $zoom_id = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_id', true );
     $zoom_pwd = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_pwd', true );
     $zoom_link = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_link', true );
