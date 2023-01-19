@@ -50,7 +50,7 @@ class AdventiEventsPageManager {
         foreach ($this->events as $e) {
             //check if event exists and add if missing
             if (!!$e->original_input && !in_array($e->original_input, $existing_inputs)) {
-                $this->add_event($e);
+                $e = $this->add_event($e);
                 array_push($added, $e);
             }
         }
@@ -70,8 +70,10 @@ class AdventiEventsPageManager {
             'post_name'     => $page_slug,			// Slug of the Post
             'meta_input'    => $event->get_meta_array(),
         );
+		//var_dump($new_page['meta_input']);
 
         $new_page_id = wp_insert_post($new_page);
+		return AdventiEvent::from_post($new_page_id);
     }
 
     private function get_default_content($event) {

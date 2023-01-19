@@ -45,9 +45,15 @@ function ad_ev_update() {
 ';
             $message .= 'Ort: ' . $e->location->address . '
 ';
+			$message .= 'Zoom: ' . $e->zoom->id . '
+';
             $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '
 ';
             $message .= 'Special: ' . $e->special->value . '
+';
+	        $message .= 'ist Präsenz: ' . ($e->location->is_real ? 'true' : 'false') . '
+';
+			$message .= 'ist Zoom: ' . ($e->zoom->is_zoom ? 'true' : 'false') . '
 
 ';
         }

@@ -9,6 +9,14 @@ enum AdventiEventsIntervals: string {
     case BIWEEKLY = 'alle 2 Wochen';
     case THREE_WEEKS = 'alle 3 Wochen';
     case FOUR_WEEKS = 'alle 4 Wochen';
+	
+	public static function tryFromName(string $name): ?static {
+        $reflection = new ReflectionEnum(static::class);
+
+        return $reflection->hasCase($name)
+            ? $reflection->getCase($name)->getValue()
+            : null;
+    }
 
     public static function values(): array {
         return array_column(self::cases(), 'value');

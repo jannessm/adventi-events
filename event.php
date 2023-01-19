@@ -39,14 +39,14 @@ class AdventiEvent {
         $preacher = null,
         $recurrence = null,
         $image_id = null,
-        $is_real = null,
+        $is_real = true,
         $location = null,
         $location_lng = null,
         $location_lat = null,
         $special = null,
         $original_input = null,
         $exclude_dates = null,
-        $is_zoom = null,
+        $is_zoom = true,
         $zoom_id = null,
         $zoom_pwd = null,
         $zoom_tel = null,
@@ -64,14 +64,14 @@ class AdventiEvent {
         $this->recurrence = $this->set_value($recurrence, AdventiEventsIntervals::ONCE->value);
         $this->image_id = $this->set_value($image_id, $this->options[AD_EV_FIELD . 'default_image']);
         $this->location = new AdventiEventPosition(
-            $this->set_value($is_real, "true") === "true",
+            $is_real,
             $this->set_value($location, $this->options[AD_EV_FIELD . 'church_location']),
             $this->set_value($location_lng, $this->options[AD_EV_FIELD . 'church_lng']),
             $this->set_value($location_lat, $this->options[AD_EV_FIELD . 'church_lat']),
         );
         if (!!$is_zoom || !!$zoom_id || !!$zoom_pwd || !!$zoom_tel || !!$zoom_link) {
             $this->zoom = new AdventiEventZoomData(
-                $this->set_value($is_zoom, "false") === "true",
+                $this->set_value($is_zoom, true),
                 $this->set_value($zoom_id, ''),
                 $this->set_value($zoom_pwd, ''),
                 $this->set_value($zoom_tel, ''),
@@ -79,14 +79,14 @@ class AdventiEvent {
             );
         } else {
             $this->zoom = new AdventiEventZoomData(
-                $this->set_value($is_zoom, "true") === "true",
+                $is_zoom,
                 $this->set_value($zoom_id, $this->options[AD_EV_FIELD . 'zoom_id']),
                 $this->set_value($zoom_pwd, $this->options[AD_EV_FIELD . 'zoom_pwd']),
                 $this->set_value($zoom_tel, $this->options[AD_EV_FIELD . 'zoom_tel']),
                 $this->set_value($zoom_link, $this->options[AD_EV_FIELD . 'zoom_link'])
             );   
         }
-        $this->special = $this->set_value($special, 'false') === "true";
+        $this->special = $special;
         
         $this->original_input = $original_input;
         $this->exclude_dates = array_map(fn($i) => trim($i), explode(',', $exclude_dates));
@@ -104,7 +104,7 @@ class AdventiEvent {
 		$recurrence = get_post_meta(     $post_id, AD_EV_META . 'recurrence', true );
 		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image_id', true );
 		
-        $is_real = get_post_meta(        $post_id, AD_EV_META . 'is_real', true );
+        $is_real = get_post_meta(        $post_id, AD_EV_META . 'is_real', true ) === "true";
         $location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
 		$location_lng = get_post_meta(   $post_id, AD_EV_META . 'location_lng', true ); 
 		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true );
@@ -113,7 +113,7 @@ class AdventiEvent {
         $original_input = get_post_meta( $post_id, AD_EV_META . 'original_input', true);
         $exclude_dates = get_post_meta(  $post_id, AD_EV_META . 'exclude_dates', true);
         
-        $is_zoom = get_post_meta(        $post_id, AD_EV_META . 'is_zoom', true);
+        $is_zoom = get_post_meta(        $post_id, AD_EV_META . 'is_zoom', true) === "true";
         $zoom_id = get_post_meta(        $post_id, AD_EV_META . 'zoom_id', true);
         $zoom_pwd = get_post_meta(       $post_id, AD_EV_META . 'zoom_pwd', true);
         $zoom_tel = get_post_meta(       $post_id, AD_EV_META . 'zoom_tel', true);
@@ -136,14 +136,14 @@ class AdventiEvent {
             AD_EV_META . 'preacher' => $this->preacher,
             AD_EV_META . 'recurrence' => $this->recurrence,
             AD_EV_META . 'image' => $this->image_id,
-            AD_EV_META . 'is_real' => $this->location->is_real ? 'true' : 'false',
+            AD_EV_META . 'is_real' => ($this->location->is_real ? "true" : "false"),
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,
             AD_EV_META . 'special' => $this->special->value,
             AD_EV_META . 'original_input' => $this->original_input,
             AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
-            AD_EV_META . 'is_zoom' => $this->zoom->is_zoom ? 'true' : 'false',
+            AD_EV_META . 'is_zoom' => ($this->zoom->is_zoom ? "true" : "false"),
             AD_EV_META . 'zoom_id' => $this->zoom->id,
             AD_EV_META . 'zoom_pwd' => $this->zoom->pwd,
             AD_EV_META . 'zoom_tel' => $this->zoom->tel,

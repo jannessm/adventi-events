@@ -31,11 +31,17 @@ abstract class AdventiEventsMetaBox {
 					$name,
 					$_POST[$name]
 				);
-			} elseif (in_array($key,['is_real', 'is_zoom', 'special'])) {
+			} elseif (in_array($key,['is_real', 'is_zoom'])) {
 				update_post_meta(
 					$post_id,
 					$name,
 					"false"
+				);
+			} elseif ($key === 'special') {
+				update_post_meta(
+					$post_id,
+					$name,
+					null
 				);
 			}
 		}

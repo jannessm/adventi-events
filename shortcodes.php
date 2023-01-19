@@ -5,13 +5,14 @@ function ad_ev_header($atts = [], $content = '', $tag = '') {
     $content .= ad_ev_date($atts);
     $content .= ad_ev_preacher($atts);
     $content .= ad_ev_location($atts);
-    $content .= ad_ev_zoom($atts);
     return $content;
 }
 
 add_shortcode('ad_ev_preacher', 'ad_ev_preacher');
 function ad_ev_preacher($atts = [], $content = '', $tag = '') {
     $preacher = get_post_meta( get_post()->ID, AD_EV_META . 'preacher', true );
+	
+	if (!$preacher) return '';
     
     // normalize attribute keys, lowercase
 	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -48,6 +49,20 @@ function ad_ev_date($atts = [], $content = '', $tag = '') {
 
 add_shortcode('ad_ev_location', 'ad_ev_location');
 function ad_ev_location($atts = [], $content = '', $tag = '') {
+    $is_real = get_post_meta( get_post()->ID, AD_EV_META . 'is_real', true ) === 'true';
+    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) === 'true';
+	
+	$html = '';
+	if ($is_real) {
+		$html .= ad_ev_location_present($atts, $content, $tag);
+	}
+	if ($is_zoom) {
+		$html .= ad_ev_zoom($atts, $content, $tag);
+	}
+
+    return $html;
+}
+function ad_ev_location_present($atts = [], $content = '', $tag = '') {
     $location = get_post_meta( get_post()->ID, AD_EV_META . 'location', true );
     
     // normalize attribute keys, lowercase
@@ -63,7 +78,7 @@ function ad_ev_location($atts = [], $content = '', $tag = '') {
     return _ad_ev_label_value('Ort', $location, strtoupper($atts['label']) == 'TRUE');
 }
 
-add_shortcode('ad_ev_zoom', 'ad_ev_zoom');
+
 function ad_ev_zoom($atts = [], $content = '', $tag = '') {
     $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) === 'true';
     $zoom_id = get_post_meta( get_post()->ID, AD_EV_META . 'zoom_id', true );
@@ -156,7 +171,7 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
     // override default attributes with user attributes
     $atts = shortcode_atts(
         array(
-            'event_page' => '?page_id=9',
+            'event_page' => '/veranstaltungen',
             'n' => 5,
         ), $atts, $tag
     );
@@ -234,13 +249,19 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
 
 function get_event_link($event) {
     $post = get_post($event->post_id);
+	$location = '';
+	if ($event->location->is_real) {
+		$location = $event->location->address;
+	} elseif ($event->zoom->is_zoom) {
+		$location = 'Zoom';
+	}
     return '
     <a href="'. get_permalink($post) .'">
         <div class="ad_ev_sidebar_event">
             <h4>'. strtoupper(get_the_title($post)) .'</h4>
             <hr>
             ' . $event->date->format('d.m.Y, H:i') .'<br>
-            ' . $event->location->address . '
+            ' . $location . '
         </div>
     </a>';
 }
