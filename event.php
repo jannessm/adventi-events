@@ -136,7 +136,7 @@ class AdventiEvent {
             AD_EV_META . 'preacher' => $this->preacher,
             AD_EV_META . 'recurrence' => $this->recurrence,
             AD_EV_META . 'image' => $this->image_id,
-            AD_EV_META . 'is_real' => $this->is_real ? 'true' : 'false',
+            AD_EV_META . 'is_real' => $this->location->is_real ? 'true' : 'false',
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,

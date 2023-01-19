@@ -22,9 +22,7 @@ function ad_ev_update_events_handler() {
 
 function ad_ev_update() {
     $options = get_option( 'ad_ev_options' );
-	if (!$options) {
-		var_dump('hi');
-	}
+
     $plan_url = $options[AD_EV_FIELD . 'preacher_plan'];
     $church = $options[AD_EV_FIELD . 'church_name'];
     $mail = $options[AD_EV_FIELD . 'cron_mail'];
