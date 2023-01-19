@@ -47,7 +47,7 @@ function ad_ev_update() {
 ';
             $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '
 ';
-            $message .= 'Special: ' . $e->special . '
+            $message .= 'Special: ' . $e->special->value . '
 
 ';
         }

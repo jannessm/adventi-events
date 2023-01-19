@@ -28,9 +28,7 @@ function ad_ev_section_text_page() {
 	$image_ids = [];
 
 	foreach($option_labels as $key => $label) {
-		// var_dump($options[AD_EV_FIELD . $key . '_img']);
 		$image_ids[$key] = !!$options[AD_EV_FIELD . $key . '_img'] ? $options[AD_EV_FIELD . $key . '_img'] : '';
-		// var_dump($image_ids[$key] . '\n');
 	}
 	
     if ( 'text' != $ad_ev_active_tab ) {

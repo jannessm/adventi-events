@@ -60,7 +60,7 @@ class AdventiEventsPageManager {
 
     private function add_event($event) {
         $page_slug = $event->is_special() ? $event->special->value : 'Gottesdienst'; // Slug of the Post
-		var_dump($event);
+
         $new_page = array(
             'post_type'     => 'event', 				// Post Type Slug eg: 'page', 'post'
             'post_title'    => $page_slug,	        // Title of the Content

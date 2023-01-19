@@ -140,7 +140,7 @@ class AdventiEvent {
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,
-            AD_EV_META . 'special' => $this->special,
+            AD_EV_META . 'special' => $this->special->value,
             AD_EV_META . 'original_input' => $this->original_input,
             AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
             AD_EV_META . 'is_zoom' => $this->zoom->is_zoom ? 'true' : 'false',

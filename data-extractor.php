@@ -74,8 +74,12 @@ class AdventiEventsDataExtractor {
     
         $plan = [];
         foreach ($dates as $i => $date) {
+            $date = str_replace('Mär', 'März', $date);
+            $date = str_replace('Jun', 'Juni', $date);
+            $date = str_replace('Jul', 'Juli', $date);
+
             $formatter = new IntlDateFormatter('de_DE', IntlDateFormatter::NONE, 
-                                               IntlDateFormatter::NONE, NULL, NULL, "dd. MMM yy");
+            IntlDateFormatter::NONE, NULL, NULL, "dd. MMM yy");
             $date = (new DateTime())->setTimestamp($formatter->parse($date));
 
             $options = get_option( 'ad_ev_options' );
