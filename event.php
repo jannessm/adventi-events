@@ -104,7 +104,7 @@ class AdventiEvent {
 		$recurrence = get_post_meta(     $post_id, AD_EV_META . 'recurrence', true );
 		$image_id = get_post_meta(       $post_id, AD_EV_META . 'image_id', true );
 		
-        $is_real = get_post_meta(        $post_id, AD_EV_META . 'is_real', true ) === "true";
+        $is_real = get_post_meta(        $post_id, AD_EV_META . 'is_real', true ) == "true";
         $location = get_post_meta(       $post_id, AD_EV_META . 'location', true );
 		$location_lng = get_post_meta(   $post_id, AD_EV_META . 'location_lng', true ); 
 		$location_lat = get_post_meta(   $post_id, AD_EV_META . 'location_lat', true );
@@ -113,7 +113,7 @@ class AdventiEvent {
         $original_input = get_post_meta( $post_id, AD_EV_META . 'original_input', true);
         $exclude_dates = get_post_meta(  $post_id, AD_EV_META . 'exclude_dates', true);
         
-        $is_zoom = get_post_meta(        $post_id, AD_EV_META . 'is_zoom', true) === "true";
+        $is_zoom = get_post_meta(        $post_id, AD_EV_META . 'is_zoom', true) == "true";
         $zoom_id = get_post_meta(        $post_id, AD_EV_META . 'zoom_id', true);
         $zoom_pwd = get_post_meta(       $post_id, AD_EV_META . 'zoom_pwd', true);
         $zoom_tel = get_post_meta(       $post_id, AD_EV_META . 'zoom_tel', true);
@@ -135,12 +135,12 @@ class AdventiEvent {
             AD_EV_META . 'date' => $this->date->format('Y-m-d\\TH:i'),
             AD_EV_META . 'preacher' => $this->preacher,
             AD_EV_META . 'recurrence' => $this->recurrence,
-            AD_EV_META . 'image' => $this->image_id,
+            AD_EV_META . 'image_id' => $this->image_id,
             AD_EV_META . 'is_real' => ($this->location->is_real ? "true" : "false"),
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,
-            AD_EV_META . 'special' => $this->special->value,
+            AD_EV_META . 'special' => (!!$this->special ? $this->special->value : null),
             AD_EV_META . 'original_input' => $this->original_input,
             AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
             AD_EV_META . 'is_zoom' => ($this->zoom->is_zoom ? "true" : "false"),

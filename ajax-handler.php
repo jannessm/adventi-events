@@ -6,6 +6,17 @@ include_once dirname(__FILE__) . '/page-manager.php';
 /**
  * Handles my AJAX request.
  */
+function ad_ev_delete_events_handler() {
+    check_ajax_referer( 'update_events' );
+
+    $manager = new AdventiEventsPageManager([]);
+
+    wp_send_json($manager->delete_added_posts());
+}
+
+/**
+ * Handles my AJAX request.
+ */
 function ad_ev_update_events_handler() {
     check_ajax_referer( 'update_events' );
 	
@@ -49,7 +60,7 @@ function ad_ev_update() {
 ';
             $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '
 ';
-            $message .= 'Special: ' . $e->special->value . '
+            $message .= 'Special: ' . $e->special . '
 ';
 	        $message .= 'ist Präsenz: ' . ($e->location->is_real ? 'true' : 'false') . '
 ';

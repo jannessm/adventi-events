@@ -31,13 +31,14 @@ abstract class AdventiEventsMetaBox {
 					$name,
 					$_POST[$name]
 				);
-			} elseif (in_array($key,['is_real', 'is_zoom'])) {
+			} elseif (in_array($key,['is_real', 'is_zoom']) && isset($_POST[AD_EV_META . 'preacher'])) {
+				var_dump('hi', $post_id, );
 				update_post_meta(
 					$post_id,
 					$name,
 					"false"
 				);
-			} elseif ($key === 'special') {
+			} elseif ($key === 'special' && isset($_POST[AD_EV_META . 'preacher'])) {
 				update_post_meta(
 					$post_id,
 					$name,

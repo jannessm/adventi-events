@@ -42,6 +42,19 @@ class AdventiEventsPageManager {
         }
     }
 
+    public function delete_added_posts() {
+        $events = $this->existing_events;
+        $deleted = [];
+
+        foreach ($events as $e) {
+            if (!!$e->original_input) {
+                wp_delete_post($e->post_id);
+                array_push($deleted, $e);
+            }
+        }
+        return $deleted;
+    }
+
     public function update() {
         $this->delete_past_events();
         $existing_inputs = array_column($this->existing_events, 'original_input');
@@ -70,10 +83,12 @@ class AdventiEventsPageManager {
             'post_name'     => $page_slug,			// Slug of the Post
             'meta_input'    => $event->get_meta_array(),
         );
-		//var_dump($new_page['meta_input']);
-
+        
         $new_page_id = wp_insert_post($new_page);
-		return AdventiEvent::from_post($new_page_id);
+
+        if ($new_page_id > 0)
+            return AdventiEvent::from_post($new_page_id);
+		return null;
     }
 
     private function get_default_content($event) {

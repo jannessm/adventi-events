@@ -42,7 +42,8 @@ function ad_ev_section_update_page() {
 	ad_ev_settings_input('email', AD_EV_FIELD . 'cron_mail', 'Email', '', 'Update Bericht wird an diese Mail gesendet.');
 	?>
 		<a class="button" onclick="update(event)">Manuelles Update</a>
-		<div id="adventi-events-dates"></div>
+		<a class="button" onclick="delete_all_services(event)">Alle Gottesdienste löschen</a>
+		<div id="adventi-events-dates" style="white-space: pre;"></div>
 	<?php
 }
 

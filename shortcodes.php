@@ -49,8 +49,8 @@ function ad_ev_date($atts = [], $content = '', $tag = '') {
 
 add_shortcode('ad_ev_location', 'ad_ev_location');
 function ad_ev_location($atts = [], $content = '', $tag = '') {
-    $is_real = get_post_meta( get_post()->ID, AD_EV_META . 'is_real', true ) === 'true';
-    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) === 'true';
+    $is_real = get_post_meta( get_post()->ID, AD_EV_META . 'is_real', true ) == 'true';
+    $is_zoom = get_post_meta( get_post()->ID, AD_EV_META . 'is_zoom', true ) == 'true';
 	
 	$html = '';
 	if ($is_real) {
