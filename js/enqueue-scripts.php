@@ -87,3 +87,13 @@ function ad_ev_enqueue_zoom_details($hook) {
         true
     );
 }
+
+function ad_ev_enqueue_event_previews($hook) {
+    wp_enqueue_script(
+        'event_previews',
+        plugins_url( '/previews.js', __FILE__),
+        array( 'jquery'),
+        '1.0.0',
+        true
+    );
+}

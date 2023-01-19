@@ -22,6 +22,7 @@ include_once dirname(__FILE__) . '/js/enqueue-scripts.php'; // load js scripts
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_leaflet_lib' );
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_leaflet_scripts_read_only' );
 add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_zoom_details' );
+add_action( 'wp_enqueue_scripts', 'ad_ev_enqueue_event_previews' );
 add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_leaflet_lib' );
 add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_admin_scripts' );
 add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_leaflet_scripts' );

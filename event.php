@@ -86,7 +86,7 @@ class AdventiEvent {
                 $this->set_value($zoom_link, $this->options[AD_EV_FIELD . 'zoom_link'])
             );   
         }
-        $this->special = $special;
+        $this->special = $this->set_value($special, "false");
         
         $this->original_input = $original_input;
         $this->exclude_dates = array_map(fn($i) => trim($i), explode(',', $exclude_dates));
@@ -123,11 +123,11 @@ class AdventiEvent {
     }
 
     public function is_recurrent() {
-        return $this->recurrence !== AdventiEventsIntervals::ONCE->value;
+        return $this->recurrence != AdventiEventsIntervals::ONCE->value;
     }
 
     public function is_special() {
-        return !!$this->special;
+        return $this->special != "false";
     }
 
     public function get_meta_array() {
@@ -140,7 +140,7 @@ class AdventiEvent {
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,
-            AD_EV_META . 'special' => (!!$this->special ? $this->special->value : null),
+            AD_EV_META . 'special' => ($this->is_special() ? $this->special->value : "false"),
             AD_EV_META . 'original_input' => $this->original_input,
             AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
             AD_EV_META . 'is_zoom' => ($this->zoom->is_zoom ? "true" : "false"),
@@ -168,7 +168,7 @@ class AdventiEvent {
                 $this->date->setTime($time_matches[0], 0);
             }
         
-        } elseif (count($matches) > 0 && !$this->special) {
+        } elseif (count($matches) > 0 && !$this->is_special()) {
             $this->preacher = trim($matches[1]);
             $this->special = AdventiEventsSpecials::tryFromName($matches[2]);
         }
