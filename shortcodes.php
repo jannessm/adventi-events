@@ -276,7 +276,12 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
                 'value' => (new DateTime('now'))->format('Y-m-d'),
                 'compare' => '>',
                 'type' => 'DATE',
-            ]
+            ],
+			[
+				'key' => AD_EV_META . 'recurrence',
+				'value' => AdventiEventsIntervals::ONCE->value,
+				'compare' => '='
+        	]
         ]);
     }
     if ($atts['type'] == 'normal' ||
@@ -295,7 +300,12 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
                 'value' => (new DateTime('now'))->format('Y-m-d'),
                 'compare' => '>',
                 'type' => 'DATE',
-            ]
+            ],
+			[
+				'key' => AD_EV_META . 'recurrence',
+				'value' => AdventiEventsIntervals::ONCE->value,
+				'compare' => '='
+        	]
         ]);
     }
     if ($atts['type'] == 'recurrent' ||

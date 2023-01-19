@@ -22,6 +22,9 @@ function ad_ev_update_events_handler() {
 
 function ad_ev_update() {
     $options = get_option( 'ad_ev_options' );
+	if (!$options) {
+		var_dump('hi');
+	}
     $plan_url = $options[AD_EV_FIELD . 'preacher_plan'];
     $church = $options[AD_EV_FIELD . 'church_name'];
     $mail = $options[AD_EV_FIELD . 'cron_mail'];
@@ -35,13 +38,20 @@ function ad_ev_update() {
     $events = $manager->update();
 
     if ($mail != '') {
-        $message = 'Update Bericht:\n\n';
+        $message = "Update Bericht:
+
+";
 
         foreach ($events as $e) {
-            $message .= 'Prediger: ' . $e->preacher . '\n';
-            $message .= 'Ort: ' . $e->location->address . '\n';
-            $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '\n';
-            $message .= 'Special: ' . $e->special . '\n\n';
+            $message .= 'Prediger: ' . $e->preacher . '
+';
+            $message .= 'Ort: ' . $e->location->address . '
+';
+            $message .= 'Datum: ' . $e->date->format('d.m.Y H:i') . '
+';
+            $message .= 'Special: ' . $e->special . '
+
+';
         }
 
         wp_mail($mail, 'Events Update', $message);

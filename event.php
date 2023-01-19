@@ -53,6 +53,10 @@ class AdventiEvent {
         $zoom_link = null,
     ) {
 		$this->options = get_option( 'ad_ev_options' );
+		
+		if (!$this->options) {
+			return;
+		}
 
         $this->post_id = $post_id;
         $this->date = $this->set_value($date, self::default_date(), TRUE);
@@ -132,12 +136,18 @@ class AdventiEvent {
             AD_EV_META . 'preacher' => $this->preacher,
             AD_EV_META . 'recurrence' => $this->recurrence,
             AD_EV_META . 'image' => $this->image_id,
+            AD_EV_META . 'is_real' => $this->is_real ? 'true' : 'false',
             AD_EV_META . 'location' => $this->location->address,
             AD_EV_META . 'location_lng' => $this->location->lng,
             AD_EV_META . 'location_lat' => $this->location->lat,
             AD_EV_META . 'special' => $this->special,
             AD_EV_META . 'original_input' => $this->original_input,
             AD_EV_META . 'exclude_dates' => join(',', $this->exclude_dates),
+            AD_EV_META . 'is_zoom' => $this->zoom->is_zoom ? 'true' : 'false',
+            AD_EV_META . 'zoom_id' => $this->zoom->id,
+            AD_EV_META . 'zoom_pwd' => $this->zoom->pwd,
+            AD_EV_META . 'zoom_tel' => $this->zoom->tel,
+            AD_EV_META . 'zoom_link' => $this->zoom->link,
         ];
     }
 
