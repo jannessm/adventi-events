@@ -77,6 +77,7 @@ class AdventiEventsDataExtractor {
             $date = str_replace('Mär', 'März', $date);
             $date = str_replace('Jun', 'Juni', $date);
             $date = str_replace('Jul', 'Juli', $date);
+            $date = str_replace('Sep', 'Sept', $date);
 
             $formatter = new IntlDateFormatter('de_DE', IntlDateFormatter::NONE, 
             IntlDateFormatter::NONE, NULL, NULL, "dd. MMM yy");
