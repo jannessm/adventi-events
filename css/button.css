@@ -3,4 +3,6 @@ input[type=submit], button {
   background: none;
   border: 2px solid black;
   cursor: pointer;
+  color: black !important;
+  transform: translateZ(0);
 }

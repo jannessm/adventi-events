@@ -33,11 +33,9 @@
     bottom: 0;
     padding: 20px;
     background: #f0f0f0;
-    transition: height 0.2s linear;
 }
 .ad_event_text:hover{
     height: 220px;
-    transition: height 0.2s linear;
 }
 .ad_event_text h1,
 .ad_event_text h2,

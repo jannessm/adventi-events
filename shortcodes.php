@@ -114,7 +114,7 @@ function ad_ev_zoom($atts = [], $content = '', $tag = '') {
             $html .= _ad_ev_label_value('Zoom ID', $zoom_id, $label);
         }
         if (!!$zoom_pwd || !!$zoom_link || !!$zoom_tel) {
-            $html .= '<form id="ad_ev_zoom_details">' . do_shortcode('[hcaptcha]') . '<input id="ad_ev_zoom_details" type="submit" value="Zugangsdaten"></form>';
+            $html .= '<form id="ad_ev_zoom_details">' . do_shortcode('[hcaptcha]') . '<button id="ad_ev_zoom_details" type="submit">Zugangsdaten</button></form>';
             $html .= '<div id="ad_ev_details"></div>';
         }
     }
@@ -184,16 +184,33 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
             <a href="'. $event_page .'">VERANSTALTUNGEN</a>
         </div>
     ';
+	
+	// update all recurrent events
+	$meta_query = _ad_ev_get_query(FALSE, TRUE, FALSE, FALSE, TRUE);
+	$args = array(
+		'post_type' => 'event',
+		'posts_per_page' => -1,
+		'meta_key' => AD_EV_META . 'date',
+		'meta_query' => $meta_query,
+	);
+	$query = new WP_Query($args);
+	
+	if ($query->have_posts()) {
+		while ($query->have_posts()) {
+			$query->the_post();
+			$event = AdventiEvent::from_post(get_the_ID());
+		}
+	}
 
         $args = array(
             'post_type' => 'event',
-            'posts_per_page' => $atts['n'] + 1,
+            'posts_per_page' => $atts['n'],
             'orderby' => 'meta_value',
             'meta_key' => AD_EV_META . 'date',
             'meta_query' => [
                 [
                     'key' => AD_EV_META . 'date',
-                    'value' => (new DateTime('now'))->format('Y-m-d'),
+                    'value' => (new DateTime('now'))->setTime(0,0)->modify("-1 day")->format('Y-m-d'),
                     'compare' => '>',
                     'type' => 'DATE',
                 ]
@@ -204,38 +221,13 @@ function ad_ev_sidebar($atts = [], $content = '', $tag = '') {
         $query = new WP_Query($args);
 
         $post_counter = 0;
-
-        $recurrent = [];
         
         if ($query->have_posts()) {
             while ($query->have_posts() && $post_counter < $atts['n']) {
                 $query->the_post();
                 $event = AdventiEvent::from_post(get_the_ID());
 
-                foreach($recurrent as $r_event) {
-                    if ($r_event->date < $event->date && $post_counter < $atts['n']) {
-                        $content .= get_event_link($r_event);
-                        $post_counter++;
-                    }
-                    if ($post_counter >= $atts['n']) {
-                        break;
-                    }
-                }
-
-                if ($post_counter >= $atts['n']) {
-                    break;
-                }
-
-                if ($event->is_recurrent()) {
-                    $recurrent[] = $event;
-                }
-
                 $content .= get_event_link($event);
-
-                foreach ($recurrent as $r_event) {
-                    $date = clone $event->date;
-                    $r_event->update_date($date->add(new DateInterval('P1D')));
-                }
                 $post_counter++;
             }
         }
@@ -280,65 +272,11 @@ function ad_ev_previews($atts = [], $content = '', $tag = '') {
         ), $atts, $tag
     );
 
-    $meta_query = ['relation' => 'OR'];
-    if ($atts['type'] == 'special' ||
-        $atts['type'] == 'non-normal' ||
-        $atts['type'] == 'non-recurrent' ||
-        $atts['type'] == 'all') {
-        array_push($meta_query, [
-            'relation' => 'AND',
-            [
-                'key' => AD_EV_META . 'special',
-                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
-                'compare' => 'IN'
-            ],
-            [
-                'key' => AD_EV_META . 'date',
-                'value' => (new DateTime('now'))->format('Y-m-d'),
-                'compare' => '>',
-                'type' => 'DATE',
-            ],
-			[
-				'key' => AD_EV_META . 'recurrence',
-				'value' => AdventiEventsIntervals::ONCE->value,
-				'compare' => '='
-        	]
-        ]);
-    }
-    if ($atts['type'] == 'normal' ||
-        $atts['type'] == 'non-special' ||
-        $atts['type'] == 'non-recurrent' ||
-        $atts['type'] == 'all') {
-        array_push($meta_query, [
-            'relation' => 'AND',
-            [
-                'key' => AD_EV_META . 'special',
-                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
-                'compare' => 'NOT IN'
-            ],
-            [
-                'key' => AD_EV_META . 'date',
-                'value' => (new DateTime('now'))->format('Y-m-d'),
-                'compare' => '>',
-                'type' => 'DATE',
-            ],
-			[
-				'key' => AD_EV_META . 'recurrence',
-				'value' => AdventiEventsIntervals::ONCE->value,
-				'compare' => '='
-        	]
-        ]);
-    }
-    if ($atts['type'] == 'recurrent' ||
-        $atts['type'] == 'non-special' ||
-        $atts['type'] == 'non-normal' ||
-        $atts['type'] == 'all') {
-        array_push($meta_query, [
-            'key' => AD_EV_META . 'recurrence',
-            'value' => AdventiEventsIntervals::ONCE->value,
-            'compare' => '!='
-        ]);
-    }
+	$type = $atts['type'];
+	$normal = $type == 'all' || $type == 'normal' || $type == 'non-recurrent' || $type == 'non-special';
+	$special = $type == 'all' || $type == 'special' || $type == 'non-recurrent' || $type == 'non-normal';
+	$recurrent = $type == 'all' || $type == 'recurrent' || $type == 'non-special' || $type == 'non-normal';
+    $meta_query = _ad_ev_get_query($normal, $recurrent, $special);
     
     $args = array(
         'post_type' => 'event',
@@ -415,4 +353,84 @@ function _ad_ev_label_value($label, $value, $add_label) {
     }
     
     return $o . $value . '</p>';
+}
+
+function _ad_ev_get_query($normal, $recurrent, $special, $only_future = TRUE, $only_past = FALSE) {
+	
+    $meta_query = ['relation' => 'OR'];
+    if ($special) {
+		$special_query = [
+            'relation' => 'AND',
+            [
+                'key' => AD_EV_META . 'special',
+                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
+                'compare' => 'IN'
+            ],
+			[
+				'key' => AD_EV_META . 'recurrence',
+				'value' => AdventiEventsIntervals::ONCE->value,
+				'compare' => '='
+        	]
+        ];
+		
+		if ($only_future) {
+			array_push($special_query, 
+				[
+					'key' => AD_EV_META . 'date',
+					'value' => (new DateTime('now'))->format('Y-m-d'),
+					'compare' => '>=',
+					'type' => 'DATE',
+				]);
+		} elseif ($only_past) {
+			array_push($special_query, 
+				[
+					'key' => AD_EV_META . 'date',
+					'value' => (new DateTime('now'))->format('Y-m-d'),
+					'compare' => '<',
+					'type' => 'DATE',
+				]);
+		}
+        array_push($meta_query, $special_query);
+    }
+    if ($normal) {
+		$normal_query = [
+            'relation' => 'AND',
+            [
+                'key' => AD_EV_META . 'special',
+                'value' => array_merge(['TRUE'], AdventiEventsSpecials::values()),
+                'compare' => 'NOT IN'
+            ],
+			[
+				'key' => AD_EV_META . 'recurrence',
+				'value' => AdventiEventsIntervals::ONCE->value,
+				'compare' => '='
+        	]
+        ];
+		
+		if ($only_future) {
+			array_push($normal_query, [
+                'key' => AD_EV_META . 'date',
+                'value' => (new DateTime('now'))->format('Y-m-d'),
+                'compare' => '>=',
+                'type' => 'DATE',
+            ]);
+		} elseif ($only_past) {
+			array_push($normal_query, [
+                'key' => AD_EV_META . 'date',
+                'value' => (new DateTime('now'))->format('Y-m-d'),
+                'compare' => '<',
+                'type' => 'DATE',
+            ]);
+		}
+        array_push($meta_query, $normal_query);
+    }
+    if ($recurrent) {
+        array_push($meta_query, [
+            'key' => AD_EV_META . 'recurrence',
+            'value' => AdventiEventsIntervals::ONCE->value,
+            'compare' => '!='
+        ]);
+    }
+	
+	return $meta_query;
 }
