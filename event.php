@@ -207,6 +207,8 @@ class AdventiEvent {
                 }
             }
         }
+		
+		update_post_meta($this->post_id, AD_EV_META . 'date', $this->date->format('Y-m-d\\TH:i'));
     }
 
     private function default_date() {
