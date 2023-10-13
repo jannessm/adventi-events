@@ -31,6 +31,7 @@ class AdventiEvent {
     public $zoom;
     public $special;
     public $original_input;
+	public $exclude_dates;
     private $options;
 
     public function __construct(
@@ -58,11 +59,13 @@ class AdventiEvent {
 			return;
 		}
 
+		$default_images = [AD_EV_FIELD . 'default_image', AD_EV_FIELD . 'default_image_1', AD_EV_FIELD . 'default_image_2'];
+		
         $this->post_id = $post_id;
         $this->date = $this->set_value($date, self::default_date(), TRUE);
         $this->preacher = $this->set_value($preacher, '');
         $this->recurrence = $this->set_value($recurrence, AdventiEventsIntervals::ONCE->value);
-        $this->image_id = $this->set_value($image_id, $this->options[AD_EV_FIELD . 'default_image']);
+        $this->image_id = $this->set_value($image_id, $this->options[$default_images[array_rand($default_images)]]);
         $this->location = new AdventiEventPosition(
             $is_real,
             $this->set_value($location, $this->options[AD_EV_FIELD . 'church_location']),
@@ -154,12 +157,14 @@ class AdventiEvent {
     private function split_preacher_special() {
         preg_match('/(.*)\s+\((.+)\)/', $this->preacher, $matches);
 
+		// D. Prediger (15:30)
         if (count($matches) > 0 && str_contains($matches[2], ':')) {
             $this->preacher = trim($matches[1]);
 
 			$time = explode(':', $matches[2]);
             $this->date->setTime($time[0], $time[1]);
         
+		// D. Prediger (15 Uhr)
         } elseif (count($matches) > 0 && str_contains($matches[2], 'Uhr')) {
             $this->preacher = trim($matches[1]);
 
@@ -168,9 +173,11 @@ class AdventiEvent {
                 $this->date->setTime($time_matches[0], 0);
             }
         
+		// D. Prediger (E)
         } elseif (count($matches) > 0 && !$this->is_special()) {
             $this->preacher = trim($matches[1]);
             $this->special = AdventiEventsSpecials::tryFromName($matches[2]);
+			$this->set_default_image();
         }
     }
 
@@ -220,6 +227,33 @@ class AdventiEvent {
 		}
         return null;
     }
+	
+	private function set_default_image() {
+		if (!$this->is_special) return;
+		
+		$img = '';
+		
+		switch ($this->special) {
+            case AdventiEventsSpecials::A:
+                $img = $this->options[AD_EV_FIELD . 'default_communion_text_img'];
+            case AdventiEventsSpecials::E:
+                $img = $this->options[AD_EV_FIELD . 'default_thanks_giving_text_img'];
+            case AdventiEventsSpecials::T:
+                $img = $this->options[AD_EV_FIELD . 'default_baptism_text_img'];
+            case AdventiEventsSpecials::J:
+                $img = $this->options[AD_EV_FIELD . 'default_youth_service_text_img'];
+            case AdventiEventsSpecials::G:
+                $img = $this->options[AD_EV_FIELD . 'default_community_hour_text_img'];
+            case AdventiEventsSpecials::W:
+                $img = $this->options[AD_EV_FIELD . 'default_forest_service_text_img'];
+            default:
+                $img = $this->options[AD_EV_FIELD . 'default_image'];
+        }
+		
+		if ($img) {
+			$this->image_id = $img;
+		}
+	}
 
     private function set_value($value, $default, $is_date=FALSE) {
         if (!!!$value) {

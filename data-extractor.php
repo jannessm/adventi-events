@@ -86,12 +86,14 @@ class AdventiEventsDataExtractor {
             $options = get_option( 'ad_ev_options' );
 			$time = explode(':', $options[AD_EV_FIELD . 'service_start']);
             $date->setTime($time[0], $time[1]);
-
-            array_push($plan, new AdventiEvent(
+			
+			$new_event = new AdventiEvent(
                 date: $date,                  // date
                 preacher: $preachers[$i],     // preacher
-                original_input: $date->format('d-m-Y H:i') . ',' . $preachers[$i]   // original input
-            ));
+                original_input: $date->format('d-m-Y H:i')   // hash to map old and new posts
+            );
+
+            array_push($plan, $new_event);
         }
 
         return $plan;

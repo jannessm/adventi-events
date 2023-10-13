@@ -70,6 +70,11 @@ function ad_ev_options_page_html() {
 	if ( isset( $_GET['settings-updated'] ) ) {
 		// add settings saved message with the class of "updated"
 		add_settings_error( 'ad_ev_message', 'ad_ev_message', __( 'Einstellungen gespeichert!', 'adventi-events' ), 'updated' );
+				
+	    $options = get_option( 'ad_ev_options' );
+		if ($options[AD_EV_FIELD . 'cron'] != '' && !wp_next_scheduled( 'ad_ev_cron_hook' )) {
+			wp_schedule_event( time(), 'weekly', 'ad_ev_cron_hook' );
+		}
 	}
 
 	// show error/update messages

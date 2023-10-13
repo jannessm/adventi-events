@@ -58,17 +58,25 @@ class AdventiEventsPageManager {
     public function update() {
         $this->delete_past_events();
         $existing_inputs = array_column($this->existing_events, 'original_input');
-        $added = [];
+        $modified = ['added' => [], 'updated' => []];
 
         foreach ($this->events as $e) {
+			// corresponding event
+			$existing_e = $this->get_existing_event($e->original_input);
+			
             //check if event exists and add if missing
-            if (!!$e->original_input && !in_array($e->original_input, $existing_inputs)) {
+            if (!!$e->original_input && !$existing_e) {
                 $e = $this->add_event($e);
-                array_push($added, $e);
-            }
+                array_push($modified['added'], $e);
+			// check if event exists and if so update preacher
+            } else if (!!$e->original_input && !!$existing_e && $e->preacher != $existing_e->preacher) {
+				$existing_e->preacher = $e->preacher;
+				$this->add_event($existing_e);
+				array_push($modified['updated'], $existing_e);
+			}
         }
 
-        return $added;
+        return $modified;
     }
 
     private function add_event($event) {
@@ -83,6 +91,10 @@ class AdventiEventsPageManager {
             'post_name'     => $page_slug,			// Slug of the Post
             'meta_input'    => $event->get_meta_array(),
         );
+		
+		if (!!$event->post_id) {
+			$new_page['ID'] = $event->post_id;
+		}
         
         $new_page_id = wp_insert_post($new_page);
 
@@ -112,4 +124,14 @@ class AdventiEventsPageManager {
         }
         return '';
     }
+	
+	private function get_existing_event($original_input) {
+		foreach($this->existing_events as $e) {
+			if ($e->original_input == $original_input) {
+				return $e;
+			}
+		}
+		
+		return false;
+	}
 }

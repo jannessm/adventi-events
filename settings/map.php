@@ -21,6 +21,11 @@ function ad_ev_section_map_page() {
         ad_ev_settings_input('hidden', AD_EV_FIELD . 'church_lng', '', '', '');
         ad_ev_settings_input('hidden', AD_EV_FIELD . 'church_lat', '', '', '');
         ad_ev_settings_input('hidden', AD_EV_FIELD . 'graphhopper_api_key', '', '', '');
+        
+		ad_ev_settings_input('hidden', AD_EV_FIELD . 'zoom_id', '', '', '');
+        ad_ev_settings_input('hidden', AD_EV_FIELD . 'zoom_pwd', '', '', '');
+        ad_ev_settings_input('hidden', AD_EV_FIELD . 'zoom_tel', '', '', '');
+        ad_ev_settings_input('hidden', AD_EV_FIELD . 'zoom_link', '', '', '');
 		return;
     }
 

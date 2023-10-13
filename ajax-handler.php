@@ -22,10 +22,13 @@ function ad_ev_update_events_handler() {
 	
     $events = ad_ev_update();
 
-    $new_events = [];
+    $new_events = ['added' => [], 'updated' => []];
 
-    foreach ($events as $e) {
-        $new_events[$e->original_input] = $e->preacher . ' <-> '. $e->date->format('d.m.Y H:i');
+    foreach ($events['added'] as $e) {
+        $new_events['added'][$e->original_input] = $e->preacher . ' <-> '. $e->date->format('d.m.Y H:i');
+    }
+	foreach ($events['updated'] as $e) {
+        $new_events['updated'][$e->original_input] = $e->preacher . ' <-> '. $e->date->format('d.m.Y H:i');
     }
 
     wp_send_json($new_events);
@@ -49,10 +52,39 @@ function ad_ev_update() {
     if ($mail != '') {
         $message = "Update Bericht:
 
+    Added:
 ";
+		
+		if (sizeof($events['added']) == 0) {
+			$message .= "        Keine Änderungen";
+		}
 
-        foreach ($events as $e) {
-            $message .= 'Prediger: ' . $e->preacher . '
+        foreach ($events['added'] as $e) {
+            $message .= ad_ev_event_as_str($e);
+        }
+		
+		$message .="
+		
+		
+    Modified:
+";
+		
+		if (sizeof($events['updated']) == 0) {
+			$message .= "        Keine Änderungen";
+		}
+
+        foreach ($events['updated'] as $e) {
+            $message .= ad_ev_event_as_str($e);
+        }
+
+        wp_mail($mail, 'Events Update', $message);
+    }
+
+    return $events;
+}
+
+function ad_ev_event_as_str($e) {
+            $message = 'Prediger: ' . $e->preacher . '
 ';
             $message .= 'Ort: ' . $e->location->address . '
 ';
@@ -67,12 +99,7 @@ function ad_ev_update() {
 			$message .= 'ist Zoom: ' . ($e->zoom->is_zoom ? 'true' : 'false') . '
 
 ';
-        }
-
-        wp_mail($mail, 'Events Update', $message);
-    }
-
-    return $events;
+	return $message;
 }
 
 function ad_ev_zoom_details_handler() {
