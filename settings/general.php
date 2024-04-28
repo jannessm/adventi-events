@@ -23,7 +23,7 @@ function ad_ev_section_general_page() {
     if ( '' || 'general' != $ad_ev_active_tab ) {
 
         ad_ev_settings_input('hidden', AD_EV_FIELD . 'church_name', 'Kirche', 'z.B. Berlin-an der Hasenheide', 'Kirchenname, wie auf dem Predigtplan angegeben');
-        ad_ev_settings_input('hidden', AD_EV_FIELD . 'preacher_plan', 'Predigtplan', 'z.B. https://predigtplan.adventisten.de', 'Predigtplan URL');
+        ad_ev_settings_input('hidden', AD_EV_FIELD . 'preacher_plan', 'Predigtplan', 'z.B. http://predigtplan.adventisten.de', 'Predigtplan URL');
         ad_ev_settings_input('hidden', AD_EV_FIELD . 'service_start', 'Gottesdienst Beginn', '10:00', 'Wann beginnt der Gottesdienst i.d.R.');
         ad_ev_image_selector($image_id, 'Standard Bild 1', AD_EV_FIELD . 'default_image', '', TRUE);
         ad_ev_image_selector($image_id1, 'Standard Bild 2', AD_EV_FIELD . 'default_image_1', '', TRUE);
@@ -36,10 +36,10 @@ function ad_ev_section_general_page() {
  <h3><?php __( 'Allgemeine Einstellungen', 'adventi_events' ); ?></h3>
  
  <?php
-    echo '<p>Predigtplan unter <a href="https://predigtplan.adventisten.de">https://predigtplan.adventisten.de</a></p>';
+    echo '<p>Predigtplan unter <a href="http://predigtplan.adventisten.de">http://predigtplan.adventisten.de</a></p>';
 
     ad_ev_settings_input('text', AD_EV_FIELD . 'church_name', 'Kirche', 'z.B. Berlin-an der Hasenheide', 'Kirchenname, wie auf dem Predigtplan angegeben');
-    ad_ev_settings_input('hidden', AD_EV_FIELD . 'preacher_plan', 'Predigtplan', 'z.B. https://predigtplan.adventisten.de', 'Predigtplan URL');
+    ad_ev_settings_input('hidden', AD_EV_FIELD . 'preacher_plan', 'Predigtplan', 'z.B. http://predigtplan.adventisten.de', 'Predigtplan URL');
     ad_ev_settings_input('time', AD_EV_FIELD . 'service_start', 'Gottesdienst Beginn', '10:00', 'Wann beginnt der Gottesdienst i.d.R.');
     ad_ev_image_selector($image_id, 'Standard Bild 1', AD_EV_FIELD . 'default_image', '');
     ad_ev_image_selector($image_id1, 'Standard Bild 2', AD_EV_FIELD . 'default_image_1', '');

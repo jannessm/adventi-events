@@ -9,7 +9,7 @@ function ad_ev_settings_input($type, $field_name, $label, $placeholder, $descr) 
     global $ad_ev_label_style;
     $options = get_option( 'ad_ev_options' );
 
-    $options[AD_EV_FIELD . 'preacher_plan'] = 'https://predigtplan.adventisten.de';
+    $options[AD_EV_FIELD . 'preacher_plan'] = 'http://predigtplan.adventisten.de';
 
     $value = isset( $options[ $field_name ] ) ? $options[ $field_name ] : '';
     $input_style = 'min-width:300px;';
@@ -51,7 +51,7 @@ function ad_ev_settings_textarea($field_name, $label, $placeholder, $descr, $hid
     global $ad_ev_label_style;
     $options = get_option( 'ad_ev_options' );
 
-    $options[AD_EV_FIELD . 'preacher_plan'] = 'https://predigtplan.adventisten.de';
+    $options[AD_EV_FIELD . 'preacher_plan'] = 'http://predigtplan.adventisten.de';
 
     if (!$hidden) {
         ?>
