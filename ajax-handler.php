@@ -96,7 +96,13 @@ function ad_ev_import_csv_events_handler() {
         return;
     }
 
-    $content = file_get_contents($_FILES['csv_file']['tmp_name']);
+    $file = $_FILES['csv_file'];
+    $file_type = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
+    if (!isset($file_type['ext']) || $file_type['ext'] !== 'csv') {
+        wp_send_json_error('Nur CSV Dateien sind erlaubt.', 400);
+        return;
+    }
+    $content = file_get_contents($file['tmp_name']);
     if ($content === false || trim($content) === '') {
         wp_send_json_error('CSV Datei ist leer oder ungültig.', 400);
         return;
@@ -130,9 +136,8 @@ function ad_ev_events_from_uploaded_csv($content) {
 
     $delimiter = (substr_count($rows[0], ';') > substr_count($rows[0], ',')) ? ';' : ',';
     $header = str_getcsv($rows[0], $delimiter);
-    $values = str_getcsv($rows[1], $delimiter);
 
-    if (count($header) < 2 || count($values) < 2) {
+    if (count($header) < 2) {
         return new WP_Error('invalid_csv', 'CSV Format ist ungültig.');
     }
 
@@ -143,7 +148,39 @@ function ad_ev_events_from_uploaded_csv($content) {
     $minute = isset($time[1]) ? intval($time[1]) : 0;
 
     $dates = array_slice($header, 1);
-    $preachers = array_slice($values, 1);
+    $church = isset($options[AD_EV_FIELD . 'church_name']) ? trim($options[AD_EV_FIELD . 'church_name']) : '';
+    $target_row = null;
+    $found_matching_church = false;
+
+    foreach (array_slice($rows, 1) as $row) {
+        if (trim($row) === '') {
+            continue;
+        }
+        $row_values = str_getcsv($row, $delimiter);
+        if (count($row_values) < 2) {
+            continue;
+        }
+
+        $row_church = trim($row_values[0]);
+        if ($target_row === null) {
+            $target_row = $row_values;
+        }
+
+        if ($church !== '' && mb_strtolower($row_church) === mb_strtolower($church)) {
+            $target_row = $row_values;
+            $found_matching_church = true;
+            break;
+        }
+    }
+
+    if ($target_row === null) {
+        return new WP_Error('invalid_csv', 'Keine importierbaren Zeilen in der CSV gefunden.');
+    }
+    if ($church !== '' && !$found_matching_church) {
+        return new WP_Error('invalid_csv', 'Konfigurierte Kirche wurde in der CSV nicht gefunden.');
+    }
+
+    $preachers = array_slice($target_row, 1);
     $plan = [];
 
     foreach ($dates as $i => $date_str) {
@@ -154,9 +191,8 @@ function ad_ev_events_from_uploaded_csv($content) {
             continue;
         }
 
-        try {
-            $date = new DateTime($date_str);
-        } catch (Exception $e) {
+        $date = ad_ev_parse_csv_date($date_str);
+        if ($date === null) {
             continue;
         }
 
@@ -198,71 +234,108 @@ function ad_ev_zoom_details_handler() {
         return;
     }
 
-    add_action('rest_api_init', 'ad_ev_register_api_routes');
-    function ad_ev_register_api_routes() {
-        register_rest_route('adventi-events/v1', '/imported-events', [
-            'methods' => 'GET',
-            'callback' => 'ad_ev_get_imported_events_endpoint',
-            'permission_callback' => 'ad_ev_validate_api_secret'
-        ]);
-    }
-
-    function ad_ev_validate_api_secret($request) {
-        $options = get_option('ad_ev_options');
-        $secret = isset($options[AD_EV_FIELD . 'api_secret']) ? $options[AD_EV_FIELD . 'api_secret'] : '';
-        $provided_secret = $request->get_param('secret');
-
-        if ($provided_secret === null) {
-            $provided_secret = $request->get_header('X-Adventi-Secret');
-        }
-
-        if ($secret === '' || $provided_secret === null || !hash_equals($secret, $provided_secret)) {
-            return new WP_Error('rest_forbidden', 'Invalid secret.', ['status' => 403]);
-        }
-
-        return true;
-    }
-
-    function ad_ev_get_imported_events_endpoint($request) {
-        $query = new WP_Query([
-            'post_type' => 'event',
-            'post_status' => 'publish',
-            'posts_per_page' => -1,
-            'meta_query' => [[
-                'key' => AD_EV_META . 'original_input',
-                'compare' => 'EXISTS'
-            ]]
-        ]);
-
-        $entries = [];
-        while ($query->have_posts()) {
-            $query->the_post();
-            $post_id = get_the_ID();
-            $original_input = get_post_meta($post_id, AD_EV_META . 'original_input', true);
-            if (!$original_input) {
-                continue;
-            }
-
-            $entries[] = [
-                'id' => $post_id,
-                'date' => get_post_meta($post_id, AD_EV_META . 'date', true),
-                'preacher' => get_post_meta($post_id, AD_EV_META . 'preacher', true),
-                'updated_at' => get_post_modified_time('c', true, $post_id),
-            ];
-        }
-        wp_reset_query();
-
-        return [
-            'church' => get_option('ad_ev_options')[AD_EV_FIELD . 'church_name'],
-            'updated_at' => current_time('c'),
-            'entries' => $entries
-        ];
-    }
-
     $zoom_pwd = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_pwd', true );
     $zoom_link = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_link', true );
     $zoom_tel = get_post_meta( $_POST['post_id'], AD_EV_META . 'zoom_tel', true );
 
     wp_send_json(['pwd' => $zoom_pwd, 'link' => $zoom_link, 'tel' => $zoom_tel]);
     wp_die();
+}
+
+add_action('rest_api_init', 'ad_ev_register_api_routes');
+function ad_ev_register_api_routes() {
+    register_rest_route('adventi-events/v1', '/imported-events', [
+        'methods' => 'GET',
+        'callback' => 'ad_ev_get_imported_events_endpoint',
+        'permission_callback' => 'ad_ev_validate_api_secret'
+    ]);
+}
+
+function ad_ev_validate_api_secret($request) {
+    $options = get_option('ad_ev_options');
+    $secret = isset($options[AD_EV_FIELD . 'api_secret']) ? $options[AD_EV_FIELD . 'api_secret'] : '';
+    $provided_secret = $request->get_header('X-Adventi-Secret');
+    if (!is_string($provided_secret)) {
+        $provided_secret = '';
+    }
+
+    if ($secret === '' || !hash_equals($secret, $provided_secret)) {
+        return new WP_Error('rest_forbidden', 'Invalid secret.', ['status' => 403]);
+    }
+
+    return true;
+}
+
+function ad_ev_get_imported_events_endpoint($request) {
+    $per_page = intval($request->get_param('per_page'));
+    $page = intval($request->get_param('page'));
+    if ($per_page <= 0) {
+        $per_page = 100;
+    }
+    if ($per_page > 500) {
+        $per_page = 500;
+    }
+    if ($page <= 0) {
+        $page = 1;
+    }
+
+    $query = new WP_Query([
+        'post_type' => 'event',
+        'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'paged' => $page,
+        'orderby' => 'modified',
+        'order' => 'DESC',
+        'meta_query' => [[
+            'key' => AD_EV_META . 'original_input',
+            'compare' => 'EXISTS'
+        ]]
+    ]);
+
+    $entries = [];
+    $latest_update_epoch = 0;
+    while ($query->have_posts()) {
+        $query->the_post();
+        $post_id = get_the_ID();
+        $original_input = get_post_meta($post_id, AD_EV_META . 'original_input', true);
+        if (!$original_input) {
+            continue;
+        }
+
+        $updated_at = get_post_modified_time('c', true, $post_id);
+        $updated_at_epoch = strtotime($updated_at);
+        if ($updated_at_epoch > $latest_update_epoch) {
+            $latest_update_epoch = $updated_at_epoch;
+        }
+
+        $entries[] = [
+            'id' => $post_id,
+            'date' => get_post_meta($post_id, AD_EV_META . 'date', true),
+            'preacher' => get_post_meta($post_id, AD_EV_META . 'preacher', true),
+            'updated_at' => $updated_at,
+        ];
+    }
+    wp_reset_postdata();
+
+    $options = get_option('ad_ev_options');
+    return [
+        'church' => isset($options[AD_EV_FIELD . 'church_name']) ? $options[AD_EV_FIELD . 'church_name'] : '',
+        'updated_at' => $latest_update_epoch > 0 ? gmdate('c', $latest_update_epoch) : null,
+        'page' => $page,
+        'per_page' => $per_page,
+        'total_pages' => intval($query->max_num_pages),
+        'entries' => $entries
+    ];
+}
+
+function ad_ev_parse_csv_date($date_str) {
+    $formats = ['Y-m-d', 'd.m.Y', 'd/m/Y'];
+    foreach ($formats as $format) {
+        $date = DateTime::createFromFormat($format, $date_str);
+        $errors = DateTime::getLastErrors();
+        if ($date !== false && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))) {
+            return $date;
+        }
+    }
+    return null;
 }

@@ -42,6 +42,7 @@ function ad_ev_section_update_page() {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => $update_nonce,
             'events_api_url' => esc_url_raw(rest_url('adventi-events/v1/imported-events')),
+            'api_secret_input_id' => AD_EV_FIELD . 'api_secret',
 		)
 	);
 
@@ -60,7 +61,7 @@ function ad_ev_section_update_page() {
         <div style="display: inline-block;">
             <input id="<?php echo esc_attr(AD_EV_FIELD . 'api_secret'); ?>" type="text" value="<?php echo esc_attr($options[AD_EV_FIELD . 'api_secret']); ?>" readonly style="min-width:300px;">
             <a class="button" onclick="copy_api_secret(event)">Secret kopieren</a>
-            <p class="description">Endpoint: <?php echo esc_html(rest_url('adventi-events/v1/imported-events')); ?></p>
+            <p class="description">Endpoint: <?php echo esc_html(rest_url('adventi-events/v1/imported-events')); ?> (Header: X-Adventi-Secret, Query: page, per_page)</p>
         </div><br>
 	<?php
 }
