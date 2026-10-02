@@ -41,8 +41,8 @@ add_action('init', 'ad_ev_init');
 function ad_ev_activate_plugin() {
     ad_ev_init();
     ad_ev_settings_init();
-    // Clear the permalinks after the post type has been registered.
-	flush_rewrite_rules();
+    ad_ev_add_csv_upload_rewrite_rule();
+    flush_rewrite_rules();
 }
 
 function ad_ev_deactivate_plugin() {

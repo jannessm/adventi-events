@@ -7,6 +7,7 @@
 
 include_once  dirname(__FILE__) . '/settings/settings.php';
 include_once dirname(__FILE__) . '/activation-hooks.php';
+include_once dirname(__FILE__) . '/csv-upload-page.php';
 
 register_activation_hook( __FILE__, 'ad_ev_activate_plugin' );
 register_deactivation_hook( __FILE__, 'ad_ev_deactivate_plugin' );
