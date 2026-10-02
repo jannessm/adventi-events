@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Adventi Events
  * Description: Automatically import all services from predigtplan.adventisten.de
- * Version: 1.0
+ * Version: 1.1
  */
 
 include_once  dirname(__FILE__) . '/settings/settings.php';
