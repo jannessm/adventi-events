@@ -254,7 +254,7 @@ function ad_ev_register_api_routes() {
 function ad_ev_validate_api_secret($request) {
     $options = get_option('ad_ev_options');
     $secret = isset($options[AD_EV_FIELD . 'api_secret']) ? $options[AD_EV_FIELD . 'api_secret'] : '';
-    $provided_secret = $request->get_param('av_ev_secr');
+    $provided_secret = $request->get_param('ad_ev_secr');
     if (!is_string($provided_secret)) {
         $provided_secret = '';
     }
