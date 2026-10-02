@@ -13,7 +13,7 @@ function update(e) {
 					if (data['added'].length == 0) {
 						report += '  Keine Änderungen<br>';
 					} else {
-						report += Object.keys(data['added']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + date + '</span><span style="display: inline-block">' + data[date] + '</span><br>', '');
+						report += Object.keys(data['added']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + ad_ev_escape_html(date) + '</span><span style="display: inline-block">' + ad_ev_escape_html(data['added'][date]) + '</span><br>', '');
 					}
 					
 					report += 'Modified:<br>';
@@ -21,7 +21,7 @@ function update(e) {
 					if (data['updated'].length == 0) {
 						report += '  Keine Änderungen';
 					} else {
-						report += Object.keys(data['updated']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + date + '</span><span style="display: inline-block">' + data[date] + '</span><br>', '');
+						report += Object.keys(data['updated']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + ad_ev_escape_html(date) + '</span><span style="display: inline-block">' + ad_ev_escape_html(data['updated'][date]) + '</span><br>', '');
 					}
 					
 					$('#adventi-events-dates').html(report);
@@ -40,8 +40,75 @@ function delete_all_services(e) {
 				if (typeof(data) === 'string') {
 					$('#adventi-events-dates').text(data)
 				} else {
-					$('#adventi-events-dates').html(data.reduce((d, event) => d + '<span style="display: inline-block;width: 300px">' + event['date']['date'] + '</span><span style="display: inline-block">' + '</span><br>', ''));
+					$('#adventi-events-dates').html(data.reduce((d, event) => d + '<span style="display: inline-block;width: 300px">' + ad_ev_escape_html(event['date']['date']) + '</span><span style="display: inline-block">' + '</span><br>', ''));
 				}
 			});
 	});
+}
+
+function import_csv_events(e) {
+	const $ = jQuery;
+	const fileInput = document.getElementById('ad-ev-csv-file');
+	if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+		$('#adventi-events-dates').text('Bitte eine CSV Datei auswählen.');
+		return;
+	}
+
+	const formData = new FormData();
+	formData.append('action', 'import_events_csv');
+	formData.append('_ajax_nonce', ajax_obj.nonce);
+	formData.append('csv_file', fileInput.files[0]);
+
+	$('#adventi-events-dates').html('Loading...');
+	$.ajax({
+		url: ajax_obj.ajax_url,
+		type: 'POST',
+		data: formData,
+		contentType: false,
+		processData: false,
+		success: (data) => {
+			if (typeof(data) === 'string') {
+				$('#adventi-events-dates').text(data);
+				return;
+			}
+
+			let report = 'Added:<br>';
+			if (Object.keys(data['added'] || {}).length === 0) {
+				report += '  Keine Änderungen<br>';
+			} else {
+				report += Object.keys(data['added']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + ad_ev_escape_html(date) + '</span><span style="display: inline-block">' + ad_ev_escape_html(data['added'][date]) + '</span><br>', '');
+			}
+
+			report += 'Modified:<br>';
+			if (Object.keys(data['updated'] || {}).length === 0) {
+				report += '  Keine Änderungen';
+			} else {
+				report += Object.keys(data['updated']).reduce((d, date) => d + '<span style="display: inline-block;width: 300px">' + ad_ev_escape_html(date) + '</span><span style="display: inline-block">' + ad_ev_escape_html(data['updated'][date]) + '</span><br>', '');
+			}
+			$('#adventi-events-dates').html(report);
+		},
+		error: (xhr) => {
+			$('#adventi-events-dates').text(xhr.responseText || 'CSV Import fehlgeschlagen.');
+		}
+	});
+}
+
+function copy_api_secret(e) {
+	const secretInput = document.getElementById(ajax_obj.api_secret_input_id);
+	if (!secretInput) {
+		return;
+	}
+
+	secretInput.select();
+	secretInput.setSelectionRange(0, 99999);
+	navigator.clipboard.writeText(secretInput.value);
+}
+
+function ad_ev_escape_html(value) {
+	return String(value)
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#039;');
 }

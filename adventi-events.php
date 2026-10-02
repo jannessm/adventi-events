@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Adventi Events
  * Description: Automatically import all services from predigtplan.adventisten.de
- * Version: 1.0
+ * Version: 1.1
  */
 
 include_once  dirname(__FILE__) . '/settings/settings.php';
@@ -33,6 +33,7 @@ add_action( 'admin_enqueue_scripts', 'ad_ev_enqueue_meta_box_scripts' );
 include_once dirname(__FILE__) . '/ajax-handler.php';
 add_action( 'wp_ajax_update_events', 'ad_ev_update_events_handler' );
 add_action( 'wp_ajax_delete_events', 'ad_ev_delete_events_handler' );
+add_action( 'wp_ajax_import_events_csv', 'ad_ev_import_csv_events_handler' );
 add_action( 'wp_ajax_zoom_details', 'ad_ev_zoom_details_handler' );
 add_action( 'wp_ajax_nopriv_zoom_details', 'ad_ev_zoom_details_handler' );
 
