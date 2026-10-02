@@ -46,7 +46,7 @@ class AdventiEvent {
         $location_lat = null,
         $special = null,
         $original_input = null,
-        $exclude_dates = null,
+        $exclude_dates = "",
         $is_zoom = true,
         $zoom_id = null,
         $zoom_pwd = null,
